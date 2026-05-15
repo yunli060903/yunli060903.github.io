@@ -1,134 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>WOTOP10芝CSRF篇</title>
-    <url>/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/</url>
-    <content><![CDATA[什么是CRSF
-
-用官方的话来说：CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。
-用人话来说：CSRF就是利用恶意小网站来借用注册凭证伪装是你来访问目标网站并执行操作。看到这个说法是不是感觉和钓鱼很像，其实我很觉得。本质上CSRF就是一个钓鱼的操作。
-在交流CSRF的过程，总绕不开两个经典问题：
-
-CSRF和SSRF的区别是什么：
-最根本的区别就是这两者的攻击对象，CSRF是用户对用户的攻击而SSRF是用户对服务器的攻击。
-
-CSRF和XSS的利用注册凭证（cookie）的区别是什么：
-两者都接触过的师傅们应该都清楚，无论是CSRF还是XSS都可以利用用户的cookie。但CSRF在使用更多的是依靠浏览器会存储cookie在再次访问页面时自带上cookie，所以在我们钓鱼的过程中会借用这个cookie；而XSS是直接获取cookie，我们想什么时候用就什么时候用，用“盗取‘这个词会不会形象点。
-
-
-CSRF怎么用
-
-
-
-GET方式
-
-GET方式产生的CSRF存在两种方式，一种是一步到位的HTTP请求式，一种是需要用户再操作一步的href式。其实根本原理二者都一样，只是href式需要用户的配合。
-HTTP请求式
-
-一般来说，我们都会利用一张图片让用户在访问页面加载图片的时候自动发送一次HTTP请求。具体如下：
-![](http://bank.com/withdraw/account=xiaoming&amp;amount=10000&amp;for=hacker)
-
-用户如果已经登录了bank.com，在用户访问这个页面的时候我们就可以“借用”他的cookie并执行操作，将10000money转到hacker的账户下。（当然，前提是这些操作无需输入密码等其他操作才可以实现，一般来说没有这么呆的代码）
-href式
-
-href式的简单利用如下：
-&lt;a href=&quot;http://bank.com/transfer?account_number_from=123456789&amp;account_number_to=987654321&amp;amount=100000&quot;&gt;View my Pictures!&lt;/a&gt;
-
-所谓href自然不会自动触发，像上面这个我们所谓的多一步操作就是需要用户手动点击一下View my Pictures!，这里就需要一点小小的社工了，你需要用足够的吸引力勾引用户点击。
-POST方式
-
-现在的具体实现操作极少用GET方式实现的了，因为GET方式比较透明，多大都用POST，所以POST方式产生的CSRF也是我们更常用的。POST方式一般都是利用表单来传递参数，所以我们也可以用一个自动提交的表单来实现我们的目标：
-&lt;form action=&quot;http://bank.com/withdraw&quot; method=POST&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;account&quot; value=&quot;xiaoming&quot; /&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;amount&quot; value=&quot;10000&quot; /&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;for&quot; value=&quot;hacker&quot; /&gt; &lt;/form&gt; &lt;script&gt; document.forms[0].submit(); &lt;/script&gt;
-
-POST方式通常比GET方式要求更加严格一点，一是由于我们需要编写适合的表单，二也是因为POST方式是需要接口常用的方式，所以防护会更多，但也并不复杂。
-如何防御CSRF
-
-CSRF通常从第三方网站发起，被攻击的网站无法防止攻击发生，只能通过增强自己网站针对CSRF的防护能力来提升安全性。
-CSRF的两个特点是：
-
-通常发生在第三方域名
-
-“借用”用户的cookie
-
-
-那我们就可以针对这两点来做防护
-
-阻止不明外域的访问
-同源检测
-Samesite Cookie
-
-
-提交时要求附加本域才能获取的信息
-CSRF Token
-双重Cookie验证
-
-
-
-我们来详细展开一点talk about
-限制同源——Samesite 
-
-Samesite 是 Set-Cookie 的一种属性，它有三个值
-Strict最为严格，完全禁止第三方 Cookie，跨站点时，任何情况下都不会发送 Cookie。换言之，只有当前网页的 URL 与请求目标一致，才会带上 Cookie。
-Set-Cookie: CookieName=CookieValue; SameSite=Strict;
-
-Lax规则稍稍放宽，大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。现代大多浏览器使用的就是这个。
-Set-Cookie: CookieName=CookieValue; SameSite=Lax;
-
-还有一种属性为 None，这种属性代表关闭了 SameSite
-CSRF token
-
-CSRF token可以誉为对CSRF近乎无敌的防御手法，下面来通俗易懂地解释一下CSRF token的工作原理。token在我们访问页面时就会产生，在用户这会存储，在服务端也会存储，我们每一次进行操作时，不仅需要检验身份验证还需要通过后端代码校验token的有效性——是否正确，在时间戳上是否有效，如果加密字符串一致且时间未过期，那么才可以通过校验进行操作，否则需要重新登录。
-以 Java 为例，介绍一下 CSRF Token 服务端的校验逻辑
-HttpServletRequest req = (HttpServletRequest)request; HttpSession s = req.getSession(); // 从 session 中得到 csrftoken 属性 String sToken = (String)s.getAttribute(“csrftoken”); if(sToken == null) &#123; 	// 产生新的 token 放入 session 中 	sToken = generateToken(); s.setAttribute(“csrftoken”,sToken); chain.doFilter(request, response); &#125;else &#123; 	// 从 HTTP 头中取得 csrftoken 	String xhrToken = req.getHeader(“csrftoken”); 	// 从请求参数中取得 csrftoken 	String pToken = req.getParameter(“csrftoken”); 	if(sToken != null &amp;&amp; xhrToken != null &amp;&amp; sToken.equals(xhrToken))&#123; 		chain.doFilter(request, response); 	&#125;	else if(sToken != null &amp;&amp; pToken != null &amp;&amp; sToken.equals(pToken))&#123; 		chain.doFilter(request, response); 	&#125;	else	&#123; request.getRequestDispatcher(“error.jsp”).forward(request,response); 	&#125; &#125;
-
-
-
-绕过姿势
-
-上面我们了解了一些防御手法，接下来就介绍一下防御姿势（大多防御姿势由PortSwigger中学习而来）
-将POST修改为GET
-
-CSRF Token 在 POST 请求当中生效，且业务点并非完全限制请求为 POST 请求，从而给了攻击者进行绕过的机会。
-
-测试：将 CSRF Token 删掉，并将 HTTP 请求修改为 GET 请求。
-
-删除 CSRF Token 进行绕过
-
-有时候虽然设置了CSRF token，但并没有强验证 CSRF Token 的存在性。
-
-测试：删除CSRF token发包测试
-
-CSRF token未与用户session绑定
-
-CSRF token未与用户session绑定就是说token并未与身份严格一一对应，就像登录，我们账号和密码并不是对应的。那么这时只需要一个正确的cookie和一个正确的token就可以，不需要这两者是绑定的。
-
-测试：先修改 Cookie，再修改 CSRF Token，来观察 CSRF Token 与 Cookie 是否对应了，或者说是否绑定了。如果不是绑定的，我们可以尝试利用 Set-Cookie来输入一个cookie，这样我们就知道了cookie，然后再用一个我们已知的token。
-
-Cookie 中的 CSRF 值与 CSRF Token 的值一致
-
-只是将 CSRF Token 简单复制到 cookie 头中，然后仅验证两者是否一致。
-
-测试：利用Set-Cookie设置一个假的csrf token，再将这个假的csrf token一起发送测试返回
-
-CSRF Token和其他值绑定在一起
-
-CSRF Token的值不是和session绑定在一起，而是和cookie中的其他值绑定在一起，这里用portswigger里的实验作为栗子：cookie中存在一个成为csrfkey的值，这个值与CSRF Token绑定在一起。但二者并没有与session绑定在一起也就是说没有与用户绑定在一起，我们可以尝试用已知用户的csrfkey和CSRF Token。
-
-测试：
-先用假的CSRF Token尝试一下，再试试其他已知用户的CSRF Token
-再尝试用其他用户的CSRF Token和csrfkey
-
-
-
-]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>csrf</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>一篇文章了解XSS</title>
     <url>/2026/01/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BA%86%E8%A7%A3XSS/</url>
     <content><![CDATA[xss都快忘得差不多，赶快再来read一下，这次好好吃细点
@@ -363,6 +235,134 @@ ENT_QUOTES这是一个标志，用于指定所有引号都应该进行编码。
       </categories>
       <tags>
         <tag>xss</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>WOTOP10芝CSRF篇</title>
+    <url>/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/</url>
+    <content><![CDATA[什么是CRSF
+
+用官方的话来说：CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。
+用人话来说：CSRF就是利用恶意小网站来借用注册凭证伪装是你来访问目标网站并执行操作。看到这个说法是不是感觉和钓鱼很像，其实我很觉得。本质上CSRF就是一个钓鱼的操作。
+在交流CSRF的过程，总绕不开两个经典问题：
+
+CSRF和SSRF的区别是什么：
+最根本的区别就是这两者的攻击对象，CSRF是用户对用户的攻击而SSRF是用户对服务器的攻击。
+
+CSRF和XSS的利用注册凭证（cookie）的区别是什么：
+两者都接触过的师傅们应该都清楚，无论是CSRF还是XSS都可以利用用户的cookie。但CSRF在使用更多的是依靠浏览器会存储cookie在再次访问页面时自带上cookie，所以在我们钓鱼的过程中会借用这个cookie；而XSS是直接获取cookie，我们想什么时候用就什么时候用，用“盗取‘这个词会不会形象点。
+
+
+CSRF怎么用
+
+
+
+GET方式
+
+GET方式产生的CSRF存在两种方式，一种是一步到位的HTTP请求式，一种是需要用户再操作一步的href式。其实根本原理二者都一样，只是href式需要用户的配合。
+HTTP请求式
+
+一般来说，我们都会利用一张图片让用户在访问页面加载图片的时候自动发送一次HTTP请求。具体如下：
+![](http://bank.com/withdraw/account=xiaoming&amp;amount=10000&amp;for=hacker)
+
+用户如果已经登录了bank.com，在用户访问这个页面的时候我们就可以“借用”他的cookie并执行操作，将10000money转到hacker的账户下。（当然，前提是这些操作无需输入密码等其他操作才可以实现，一般来说没有这么呆的代码）
+href式
+
+href式的简单利用如下：
+&lt;a href=&quot;http://bank.com/transfer?account_number_from=123456789&amp;account_number_to=987654321&amp;amount=100000&quot;&gt;View my Pictures!&lt;/a&gt;
+
+所谓href自然不会自动触发，像上面这个我们所谓的多一步操作就是需要用户手动点击一下View my Pictures!，这里就需要一点小小的社工了，你需要用足够的吸引力勾引用户点击。
+POST方式
+
+现在的具体实现操作极少用GET方式实现的了，因为GET方式比较透明，多大都用POST，所以POST方式产生的CSRF也是我们更常用的。POST方式一般都是利用表单来传递参数，所以我们也可以用一个自动提交的表单来实现我们的目标：
+&lt;form action=&quot;http://bank.com/withdraw&quot; method=POST&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;account&quot; value=&quot;xiaoming&quot; /&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;amount&quot; value=&quot;10000&quot; /&gt; 	&lt;input type=&quot;hidden&quot; name=&quot;for&quot; value=&quot;hacker&quot; /&gt; &lt;/form&gt; &lt;script&gt; document.forms[0].submit(); &lt;/script&gt;
+
+POST方式通常比GET方式要求更加严格一点，一是由于我们需要编写适合的表单，二也是因为POST方式是需要接口常用的方式，所以防护会更多，但也并不复杂。
+如何防御CSRF
+
+CSRF通常从第三方网站发起，被攻击的网站无法防止攻击发生，只能通过增强自己网站针对CSRF的防护能力来提升安全性。
+CSRF的两个特点是：
+
+通常发生在第三方域名
+
+“借用”用户的cookie
+
+
+那我们就可以针对这两点来做防护
+
+阻止不明外域的访问
+同源检测
+Samesite Cookie
+
+
+提交时要求附加本域才能获取的信息
+CSRF Token
+双重Cookie验证
+
+
+
+我们来详细展开一点talk about
+限制同源——Samesite 
+
+Samesite 是 Set-Cookie 的一种属性，它有三个值
+Strict最为严格，完全禁止第三方 Cookie，跨站点时，任何情况下都不会发送 Cookie。换言之，只有当前网页的 URL 与请求目标一致，才会带上 Cookie。
+Set-Cookie: CookieName=CookieValue; SameSite=Strict;
+
+Lax规则稍稍放宽，大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。现代大多浏览器使用的就是这个。
+Set-Cookie: CookieName=CookieValue; SameSite=Lax;
+
+还有一种属性为 None，这种属性代表关闭了 SameSite
+CSRF token
+
+CSRF token可以誉为对CSRF近乎无敌的防御手法，下面来通俗易懂地解释一下CSRF token的工作原理。token在我们访问页面时就会产生，在用户这会存储，在服务端也会存储，我们每一次进行操作时，不仅需要检验身份验证还需要通过后端代码校验token的有效性——是否正确，在时间戳上是否有效，如果加密字符串一致且时间未过期，那么才可以通过校验进行操作，否则需要重新登录。
+以 Java 为例，介绍一下 CSRF Token 服务端的校验逻辑
+HttpServletRequest req = (HttpServletRequest)request; HttpSession s = req.getSession(); // 从 session 中得到 csrftoken 属性 String sToken = (String)s.getAttribute(“csrftoken”); if(sToken == null) &#123; 	// 产生新的 token 放入 session 中 	sToken = generateToken(); s.setAttribute(“csrftoken”,sToken); chain.doFilter(request, response); &#125;else &#123; 	// 从 HTTP 头中取得 csrftoken 	String xhrToken = req.getHeader(“csrftoken”); 	// 从请求参数中取得 csrftoken 	String pToken = req.getParameter(“csrftoken”); 	if(sToken != null &amp;&amp; xhrToken != null &amp;&amp; sToken.equals(xhrToken))&#123; 		chain.doFilter(request, response); 	&#125;	else if(sToken != null &amp;&amp; pToken != null &amp;&amp; sToken.equals(pToken))&#123; 		chain.doFilter(request, response); 	&#125;	else	&#123; request.getRequestDispatcher(“error.jsp”).forward(request,response); 	&#125; &#125;
+
+
+
+绕过姿势
+
+上面我们了解了一些防御手法，接下来就介绍一下防御姿势（大多防御姿势由PortSwigger中学习而来）
+将POST修改为GET
+
+CSRF Token 在 POST 请求当中生效，且业务点并非完全限制请求为 POST 请求，从而给了攻击者进行绕过的机会。
+
+测试：将 CSRF Token 删掉，并将 HTTP 请求修改为 GET 请求。
+
+删除 CSRF Token 进行绕过
+
+有时候虽然设置了CSRF token，但并没有强验证 CSRF Token 的存在性。
+
+测试：删除CSRF token发包测试
+
+CSRF token未与用户session绑定
+
+CSRF token未与用户session绑定就是说token并未与身份严格一一对应，就像登录，我们账号和密码并不是对应的。那么这时只需要一个正确的cookie和一个正确的token就可以，不需要这两者是绑定的。
+
+测试：先修改 Cookie，再修改 CSRF Token，来观察 CSRF Token 与 Cookie 是否对应了，或者说是否绑定了。如果不是绑定的，我们可以尝试利用 Set-Cookie来输入一个cookie，这样我们就知道了cookie，然后再用一个我们已知的token。
+
+Cookie 中的 CSRF 值与 CSRF Token 的值一致
+
+只是将 CSRF Token 简单复制到 cookie 头中，然后仅验证两者是否一致。
+
+测试：利用Set-Cookie设置一个假的csrf token，再将这个假的csrf token一起发送测试返回
+
+CSRF Token和其他值绑定在一起
+
+CSRF Token的值不是和session绑定在一起，而是和cookie中的其他值绑定在一起，这里用portswigger里的实验作为栗子：cookie中存在一个成为csrfkey的值，这个值与CSRF Token绑定在一起。但二者并没有与session绑定在一起也就是说没有与用户绑定在一起，我们可以尝试用已知用户的csrfkey和CSRF Token。
+
+测试：
+先用假的CSRF Token尝试一下，再试试其他已知用户的CSRF Token
+再尝试用其他用户的CSRF Token和csrfkey
+
+
+
+]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>csrf</tag>
       </tags>
   </entry>
   <entry>
