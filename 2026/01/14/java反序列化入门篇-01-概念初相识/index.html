@@ -1,0 +1,1089 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/touxiang.ico">
+  <link rel="icon" href="/img/touxiang.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yunli">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Java反序列化也是学到java了，java确实方便，各种封装好的函数随便用，整一个就是调用调用再调用，但可以利用的地方也很多，果然便利是安全最大的敌人。 什么是反序列化一步一步学过来的师傅们肯定对反序列化的定义和原理都不太陌生了，但想必以前都是接触的PHP反序列化。那java反序列化存在的意义又是什么呢？我们知道，当两个进程进行远程通信时，可以相互发送各种类型的数据，包括文本、图片、音频、视频等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java反序列化入门篇-01-概念初相识">
+<meta property="og:url" content="http://blog.yunli1.com/2026/01/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/index.html">
+<meta property="og:site_name" content="noob weber">
+<meta property="og:description" content="Java反序列化也是学到java了，java确实方便，各种封装好的函数随便用，整一个就是调用调用再调用，但可以利用的地方也很多，果然便利是安全最大的敌人。 什么是反序列化一步一步学过来的师傅们肯定对反序列化的定义和原理都不太陌生了，但想必以前都是接触的PHP反序列化。那java反序列化存在的意义又是什么呢？我们知道，当两个进程进行远程通信时，可以相互发送各种类型的数据，包括文本、图片、音频、视频等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.yunli1.com/2026/01/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/1.png">
+<meta property="article:published_time" content="2026-01-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-30T02:11:45.272Z">
+<meta property="article:author" content="yunli">
+<meta property="article:tag" content="java反序列化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://blog.yunli1.com/2026/01/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/1.png">
+  
+  
+  
+  <title>java反序列化入门篇-01-概念初相识 - noob weber</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.yunli1.com","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>yunli&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/links/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-link-fill"></i>
+                  <span>友链</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="java反序列化入门篇-01-概念初相识"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-01-14 00:00" pubdate>
+          2026年1月14日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          23k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          194 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">java反序列化入门篇-01-概念初相识</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Java反序列化"><a href="#Java反序列化" class="headerlink" title="Java反序列化"></a>Java反序列化</h1><p>也是学到java了，java确实方便，各种封装好的函数随便用，整一个就是调用调用再调用，但可以利用的地方也很多，果然便利是安全最大的敌人。</p>
+<h2 id="什么是反序列化"><a href="#什么是反序列化" class="headerlink" title="什么是反序列化"></a>什么是反序列化</h2><p>一步一步学过来的师傅们肯定对反序列化的定义和原理都不太陌生了，但想必以前都是接触的PHP反序列化。那java反序列化存在的意义又是什么呢？我们知道，当两个进程进行远程通信时，可以相互发送各种类型的数据，包括文本、图片、音频、视频等， 而这些数据都会以二进制序列的形式在网络上传送。那么当两个Java进程进行通信时，能否实现进程间的对象传送呢？答案是可以的。如何做到呢？这就需要Java序列化与反序列化了。换句话说，一方面，发送方需要把这个Java对象转换为字节序列，然后在网络上传送；另一方面，接收方需要从字节序列中恢复出Java对象。</p>
+<p>在具体学习之前，我们先来一个栗子体会一下序列化和反序列化ba</p>
+<p>Animal 是父类，它没有实现 Serilizable 接口</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Animal</span> &#123;<br>    <span class="hljs-keyword">private</span> String color;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Animal</span><span class="hljs-params">()</span> &#123;<span class="hljs-comment">//没有无参构造将会报错</span><br>        System.out.println(<span class="hljs-string">&quot;调用 Animal 无参构造&quot;</span>);<br>    &#125;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Animal</span><span class="hljs-params">(String color)</span> &#123;<br>        <span class="hljs-built_in">this</span>.color = color;<br> <br>            System.out.println(<span class="hljs-string">&quot;调用 Animal 有 color 参数的构造&quot;</span>);<br>    &#125;<br> <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;Animal&#123;&quot;</span> +<br>                <span class="hljs-string">&quot;color=&#x27;&quot;</span> + color + <span class="hljs-string">&#x27;\&#x27;&#x27;</span> +<br>                <span class="hljs-string">&#x27;&#125;&#x27;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>BlackCat 是 Animal 的子类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BlackCat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Animal</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Serializable</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">long</span> <span class="hljs-variable">serialVersionUID</span> <span class="hljs-operator">=</span> <span class="hljs-number">1L</span>;<br>    <span class="hljs-keyword">private</span> String name;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BlackCat</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-built_in">super</span>();<br>        System.out.println(<span class="hljs-string">&quot;调用黑猫的无参构造&quot;</span>);<br>    &#125;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">BlackCat</span><span class="hljs-params">(String color, String name)</span> &#123;<br>        <span class="hljs-built_in">super</span>(color);<br>        <span class="hljs-built_in">this</span>.name = name;<br>        System.out.println(<span class="hljs-string">&quot;调用黑猫有 color 参数的构造&quot;</span>);<br>    &#125;<br> <br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;BlackCat&#123;&quot;</span> +<br>                <span class="hljs-string">&quot;name=&#x27;&quot;</span> + name + <span class="hljs-string">&#x27;\&#x27;&#x27;</span> +<span class="hljs-built_in">super</span>.toString() +<span class="hljs-string">&#x27;\&#x27;&#x27;</span> +<br>                <span class="hljs-string">&#x27;&#125;&#x27;</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>SuperMain 测试类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SuperMain</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">FILE_PATH</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;./super.bin&quot;</span>;<br> <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        serializeAnimal();<br>        deserializeAnimal();<br>    &#125;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">serializeAnimal</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">BlackCat</span> <span class="hljs-variable">black</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BlackCat</span>(<span class="hljs-string">&quot;black&quot;</span>, <span class="hljs-string">&quot;我是黑猫&quot;</span>);<br>        System.out.println(<span class="hljs-string">&quot;序列化前：&quot;</span>+black.toString());<br>        System.out.println(<span class="hljs-string">&quot;=================开始序列化================&quot;</span>);<br>        <span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(FILE_PATH));<br>        oos.writeObject(black);<br>        oos.flush();<br>        oos.close();<br>    &#125;<br> <br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deserializeAnimal</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        System.out.println(<span class="hljs-string">&quot;=================开始反序列化================&quot;</span>);<br>        <span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(FILE_PATH));<br>        <span class="hljs-type">BlackCat</span> <span class="hljs-variable">black</span> <span class="hljs-operator">=</span> (BlackCat) ois.readObject();<br>        ois.close();<br>        System.out.println(black);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs routeros">调用 Animal 有 color 参数的构造<br>调用黑猫有 color 参数的构造<br>序列化前：BlackCat&#123;<span class="hljs-attribute">name</span>=<span class="hljs-string">&#x27;我是黑猫&#x27;</span>Animal&#123;<span class="hljs-attribute">color</span>=<span class="hljs-string">&#x27;black&#x27;</span>&#125;<span class="hljs-string">&#x27;&#125;</span><br><span class="hljs-string">=================开始序列化================</span><br><span class="hljs-string">=================开始反序列化================</span><br><span class="hljs-string">调用 Animal 无参构造</span><br><span class="hljs-string">BlackCat&#123;name=&#x27;</span>我是黑猫<span class="hljs-string">&#x27;Animal&#123;color=&#x27;</span><span class="hljs-literal">null</span><span class="hljs-string">&#x27;&#125;&#x27;</span>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>从上面的执行结果来看，如果要序列化的对象的父类 Animal 没有实现序列化接口，那么在反序列化时是会调用对应的无参构造方法的，这样做的目的是重新初始化父类的属性，例如 Animal 因为没有实现序列化接口，因此对应的 color 属性就不会被序列化，因此反序列得到的 color 值就为 null。根本原因是序列化只会存储<strong>本类中声明的成员变量</strong>，且只有当前类自身实现了Serlizable，本类的成员变量才会被序列化保存到文件中，而上面的案例中，<code>color</code>这个属性是通过super来赋值的，并不算BlackCat类。</p>
+<h3 id="序列化和反序列化原理"><a href="#序列化和反序列化原理" class="headerlink" title="序列化和反序列化原理"></a>序列化和反序列化原理</h3><h4 id="serialVersionUID"><a href="#serialVersionUID" class="headerlink" title="serialVersionUID"></a>serialVersionUID</h4><p>java的序列化和反序列化需要一个关键的东西：序列化ID(serialVersionUID)，它决定是否能够成功反序列化。这是因为java的序列化机制是通过判断运行时类的serialVersionUID来验证版本一致性的，在进行反序列化时，JVM 会把传进来的字节流中的serialVersionUID与本地实体类中的serialVersionUID进行比较，如果相同则认为是一致的，便可以进行反序列化，否则就会报序列化版本不一致的异常。而验证版本一致性是为了检查这个类是否存在过修改，若是修改过我们的反序列化数据就可能不适用于现在这个类。</p>
+<h4 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h4><p>对于序列化来说，最关键的是<code>writeObject</code>，序列化其实就是调用了这个函数而已，但里面到底发生了什么才是我们真正需要学习的</p>
+<p>简单来说，序列化就是完成了以下步骤：</p>
+<ul>
+<li>将对象实例相关的类元数据输出。</li>
+<li>递归地输出类的超类描述直到不再有超类。</li>
+<li>类元数据完了以后，开始从最顶层的超类开始输出对象实例的实际数据值。</li>
+<li>从上至下递归输出实例的数据</li>
+</ul>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs tex">所谓类元数据就是序列化流里保存的类信息<br>而超类其实就可以理解为父类<br></code></pre></td></tr></table></figure>
+
+<p>下面就来看看代码来理解一下</p>
+<p><strong>ObjectOutputStream 构造函数</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-title function_">ObjectOutputStream</span><span class="hljs-params">(OutputStream out)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    verifySubclass();<br>    bout = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BlockDataOutputStream</span>(out);<span class="hljs-comment">//①</span><br>    handles = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HandleTable</span>(<span class="hljs-number">10</span>, (<span class="hljs-type">float</span>) <span class="hljs-number">3.00</span>);<br>    subs = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReplaceTable</span>(<span class="hljs-number">10</span>, (<span class="hljs-type">float</span>) <span class="hljs-number">3.00</span>);<br>    enableOverride = <span class="hljs-literal">false</span>;<span class="hljs-comment">//②</span><br>    writeStreamHeader();<span class="hljs-comment">//③</span><br>    bout.setBlockDataMode(<span class="hljs-literal">true</span>);<br>    <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>        debugInfoStack = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DebugTraceInfoStack</span>();<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        debugInfoStack = <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>bout：用于写入一些类元数据还有对象中基本数据类型的值，在下面会分析。</p>
+</li>
+<li><p>enableOverride ：false 表示不支持重写序列化过程，如果为 true ，那么需要重写 writeObjectOverride 方法。这个一般不用管它。</p>
+</li>
+<li><p>writeStreamHeader() 写入头信息，具体看下面分析。</p>
+</li>
+</ul>
+<p><strong>ObjectOutputStream#writeStreamHeader()</strong></p>
+<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs aspectj"><span class="hljs-keyword">protected</span> <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">writeStreamHeader</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException </span>&#123;<br>    bout.writeShort(STREAM_MAGIC);<span class="hljs-comment">//①</span><br>    bout.writeShort(STREAM_VERSION);<span class="hljs-comment">//②</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>STREAM_MAGIC 声明使用了序列化协议，bout 就是一个流，将对应的头数据写入该流中</p>
+</li>
+<li><p>STREAM_VERSION 指定序列化协议版本</p>
+</li>
+</ul>
+<p>ok，上面就是将数据转为流存入，了解到这就够了，下面来看看<code>writeObject</code>ba</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeObject</span><span class="hljs-params">(Object obj)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-keyword">if</span> (enableOverride) &#123;<br>        writeObjectOverride(obj);<br>        <span class="hljs-keyword">return</span>;<br>    &#125;<br>    <span class="hljs-keyword">try</span> &#123;<br>        writeObject0(obj, <span class="hljs-literal">false</span>);<br>    &#125; <span class="hljs-keyword">catch</span> (IOException ex) &#123;<br>        <span class="hljs-keyword">if</span> (depth == <span class="hljs-number">0</span>) &#123;<br>            writeFatalException(ex);<br>        &#125;<br>        <span class="hljs-keyword">throw</span> ex;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>ObjectOutStream#writeObject0()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeObject0</span><span class="hljs-params">(Object obj, <span class="hljs-type">boolean</span> unshared)</span><br>    <span class="hljs-keyword">throws</span> IOException<br>&#123;<br>    ...<br>    <span class="hljs-keyword">try</span> &#123;<br>     <br>        <span class="hljs-type">Object</span> <span class="hljs-variable">orig</span> <span class="hljs-operator">=</span> obj;<br>        Class&lt;?&gt; cl = obj.getClass();<br>        ObjectStreamClass desc;<br>       <br>        desc = ObjectStreamClass.lookup(cl, <span class="hljs-literal">true</span>);<br>        ...<br>        <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Class) &#123;<br>            writeClass((Class) obj, unshared);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> ObjectStreamClass) &#123;<br>            writeClassDesc((ObjectStreamClass) obj, unshared);<br>        <span class="hljs-comment">// END Android-changed:  Make Class and ObjectStreamClass replaceable.</span><br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> String) &#123;<br>            writeString((String) obj, unshared);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (cl.isArray()) &#123;<br>            writeArray(obj, desc, unshared);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Enum) &#123;<br>            writeEnum((Enum&lt;?&gt;) obj, desc, unshared);<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (obj <span class="hljs-keyword">instanceof</span> Serializable) &#123;<br>            writeOrdinaryObject(obj, desc, unshared);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotSerializableException</span>(<br>                    cl.getName() + <span class="hljs-string">&quot;\n&quot;</span> + debugInfoStack.toString());<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotSerializableException</span>(cl.getName());<br>            &#125;<br>        &#125;<br>    &#125; <br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>lookup 函数用于查找当前类的 ObjectStreamClass ，它是用于描述一个类的结构信息的，通过它就可以获取对象及其对象属性的相关信息，并且它内部持有该对象的父类的 ObjectStreamClass 实例。其内部大量使用了反射，感兴趣的师傅可以去看看这个类的源码。下面看看它的构造函数</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-title function_">ObjectStreamClass</span><span class="hljs-params">(<span class="hljs-keyword">final</span> Class&lt;?&gt; cl)</span> &#123;<br>    <span class="hljs-built_in">this</span>.cl = cl;<br>    name = cl.getName();<br>    isProxy = Proxy.isProxyClass(cl);<br>    isEnum = Enum.class.isAssignableFrom(cl);<br>    serializable = Serializable.class.isAssignableFrom(cl);<br>    externalizable = Externalizable.class.isAssignableFrom(cl);<br>    Class&lt;?&gt; superCl = cl.getSuperclass();<br>  	<span class="hljs-comment">//superDesc 表示需要序列化对象的父类的 ObjectStreamClass，如果为空，则调用 lookUp 查找</span><br>    superDesc = (superCl != <span class="hljs-literal">null</span>) ? lookup(superCl, <span class="hljs-literal">false</span>) : <span class="hljs-literal">null</span>;<br>		<span class="hljs-comment">//localDesc 表示自己</span><br>    localDesc = <span class="hljs-built_in">this</span>;<br>		...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>根据 obj 的类型去执行序列化操作，如果不符合序列化要求，那么会抛出 <code>NotSerializableException</code> 异常</p>
+<p><strong>ObjectOutputStream#writeOrdinaryObject</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeOrdinaryObject</span><span class="hljs-params">(Object obj,</span><br><span class="hljs-params">                                 ObjectStreamClass desc,</span><br><span class="hljs-params">                                 <span class="hljs-type">boolean</span> unshared)</span><br>    <span class="hljs-keyword">throws</span> IOException<br>&#123;<br>    ...<br>    <span class="hljs-keyword">try</span> &#123;<br>        desc.checkSerialize();<br>        bout.writeByte(TC_OBJECT);<br>        writeClassDesc(desc, <span class="hljs-literal">false</span>);<br>        handles.assign(unshared ? <span class="hljs-literal">null</span> : obj);<br>        <span class="hljs-keyword">if</span> (desc.isExternalizable() &amp;&amp; !desc.isProxy()) &#123;<br>            writeExternalData((Externalizable) obj);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            writeSerialData(obj, desc);<br>        &#125;<br>    &#125; <span class="hljs-keyword">finally</span> &#123;<br>        <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>            debugInfoStack.pop();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li><p>写入类的元 数据，TC_OBJECT. 声明这是一个新的对象，如果写入的是一个 String 类型的数据，那么就需要 TC_STRING 这个标识。 编程</p>
+</li>
+<li><p>writeClassDesc 方法主要作用就是自上而下(从父类写到子类，注意只会遍历那些实现了序列化接口的类)写入描述信息。该方法内部会不断的递归调用，我们只需要关系这个方法是写入描述信息就好了，想要深入研究的师傅阔以看看源码。</p>
+<p>从这里可以知道，序列化过程需要额外的写入很多数据，例如描述信息，类数据等，因此序列化后占用的空间肯定会更大。</p>
+</li>
+<li><p>desc.isExternalizable() 判断需要序列化的对象是否实现了 Externalizable 接口，在序列化过程就是在这个地方进行判断的。如果有，那么序列化的过程就会由程序员自己控制了哦，writeExternalData 方法会回调，在这里就可以愉快地编写需要序列化的数据拉。</p>
+</li>
+<li><p>writeSerialData 在没有实现 Externalizable 接口时，就执行这个方法</p>
+</li>
+</ul>
+<p><strong>ObjectOutputstream#writeSerialData</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">writeSerialData</span><span class="hljs-params">(Object obj, ObjectStreamClass desc)</span><br>    <span class="hljs-keyword">throws</span> IOException<br>&#123;<br>		<span class="hljs-comment">//1</span><br>    ObjectStreamClass.ClassDataSlot[] slots = desc.getClassDataLayout();<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; slots.length; i++) &#123;<br>    <br>        <span class="hljs-type">ObjectStreamClass</span> <span class="hljs-variable">slotDesc</span> <span class="hljs-operator">=</span> slots[i].desc;<br>        <br>        <span class="hljs-keyword">if</span> (slotDesc.hasWriteObjectMethod()) &#123;<span class="hljs-comment">//2</span><br>            <span class="hljs-type">PutFieldImpl</span> <span class="hljs-variable">oldPut</span> <span class="hljs-operator">=</span> curPut;<br>            curPut = <span class="hljs-literal">null</span>;<br>            <span class="hljs-type">SerialCallbackContext</span> <span class="hljs-variable">oldContext</span> <span class="hljs-operator">=</span> curContext;<br>            <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>                debugInfoStack.push(<br>                    <span class="hljs-string">&quot;custom writeObject data (class \&quot;&quot;</span> +<br>                    slotDesc.getName() + <span class="hljs-string">&quot;\&quot;)&quot;</span>);<br>            &#125;<br>            <span class="hljs-keyword">try</span> &#123;<br>                curContext = <span class="hljs-keyword">new</span> <span class="hljs-title class_">SerialCallbackContext</span>(obj, slotDesc);<br>                bout.setBlockDataMode(<span class="hljs-literal">true</span>);<br>                slotDesc.invokeWriteObject(obj, <span class="hljs-built_in">this</span>);<br>                bout.setBlockDataMode(<span class="hljs-literal">false</span>);<br>                bout.writeByte(TC_ENDBLOCKDATA);<br>            &#125; <span class="hljs-keyword">finally</span> &#123;<br>                curContext.setUsed();<br>                curContext = oldContext;<br>                <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>                    debugInfoStack.pop();<br>                &#125;<br>            &#125;<br>            curPut = oldPut;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            defaultWriteFields(obj, slotDesc);<span class="hljs-comment">//3</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>desc.getClassDataLayout 会返回 ObjectStreamClass.ClassDataSlot[] ，我们来看看 ClassDataSlot 类，可以看到它是封装了 ObjectStreamClass 而已，所以我们就简单的认为1这一步就是用于返回序列化对象及其父类的 ClassDataSlot[] 数组，我们可以从 ClassDataSlot 中获取对应 ObjectStreamClass 描述信息。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ClassDataSlot</span> &#123;<br>    <span class="hljs-comment">/** class descriptor &quot;occupying&quot; this slot */</span><br>    <span class="hljs-keyword">final</span> ObjectStreamClass desc;<br>    <span class="hljs-comment">/** true if serialized form includes data for this slot&#x27;s descriptor */</span><br>    <span class="hljs-keyword">final</span> <span class="hljs-type">boolean</span> hasData;<br>    ClassDataSlot(ObjectStreamClass desc, <span class="hljs-type">boolean</span> hasData) &#123;<br>        <span class="hljs-built_in">this</span>.desc = desc;<br>        <span class="hljs-built_in">this</span>.hasData = hasData;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>到2这开始遍历返回的数组，slotDesc 这个我们就简单将其看成对一个对象的描述吧。hasWriteObjectMethod 表示的是什么呢？这个其实就是你要序列化这个对象是否有 writeObject 这个 private 方法，注意哦，这个方法并不是任何接口的方法，而是我们手动写的。那么这个方法的作用是什么呢？这个方法我们在上面也演示过具体的使用，它就是用于自定义序列化过程的，可以返回到上面看看如果使用这个 writeObject 实现自定义序列化过程的。注意：其实这个过程不像实现 Externalizable 接口那样，自己完全去自定义序列化 数据。</li>
+<li>defaultWriteFields 这个方法就是 JVM 自动帮我们序列化了</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">defaultWriteFields</span><span class="hljs-params">(Object obj, ObjectStreamClass desc)</span><br>    <span class="hljs-keyword">throws</span> IOException<br>&#123;<br>    Class&lt;?&gt; cl = desc.forClass();<br> <br>    desc.checkDefaultSerialize();<br>    <span class="hljs-type">int</span> <span class="hljs-variable">primDataSize</span> <span class="hljs-operator">=</span> desc.getPrimDataSize();<br>    <span class="hljs-keyword">if</span> (primVals == <span class="hljs-literal">null</span> || primVals.length &lt; primDataSize) &#123;<br>        primVals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[primDataSize];<br>    &#125;<br>    desc.getPrimFieldValues(obj, primVals);<br>    <span class="hljs-comment">//①</span><br>    bout.write(primVals, <span class="hljs-number">0</span>, primDataSize, <span class="hljs-literal">false</span>);<br>    ObjectStreamField[] fields = desc.getFields(<span class="hljs-literal">false</span>);<br>    Object[] objVals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>[desc.getNumObjFields()];<br>    <span class="hljs-type">int</span> <span class="hljs-variable">numPrimFields</span> <span class="hljs-operator">=</span> fields.length - objVals.length;<br>    desc.getObjFieldValues(obj, objVals);<br>    <br>    <span class="hljs-comment">//②</span><br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; objVals.length; i++) &#123;<br>        <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>            debugInfoStack.push(<br>                <span class="hljs-string">&quot;field (class \&quot;&quot;</span> + desc.getName() + <span class="hljs-string">&quot;\&quot;, name: \&quot;&quot;</span> +<br>                fields[numPrimFields + i].getName() + <span class="hljs-string">&quot;\&quot;, type: \&quot;&quot;</span> +<br>                fields[numPrimFields + i].getType() + <span class="hljs-string">&quot;\&quot;)&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">try</span> &#123;<br>            writeObject0(objVals[i],<br>                         fields[numPrimFields + i].isUnshared());<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-keyword">if</span> (extendedDebugInfo) &#123;<br>                debugInfoStack.pop();<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这个方法主要分为以下两步</p>
+<ul>
+<li>写入基本数据类型的数据</li>
+<li>写入引用数据类型的数据，这里最终又调用到了 writeObject0() 方法，忘了可以返回到上面去看看具体的实现。</li>
+</ul>
+<h4 id="反序列化"><a href="#反序列化" class="headerlink" title="反序列化"></a>反序列化</h4><p>反序列化的关键当然就是<code>readObject </code>拉</p>
+<p>反序列化代码原理和前面是对应的，我们就不再详细read，讲讲提一提关键的部分就好，觉得前面还没捋清楚的师傅也推荐可以看看，可以前后对照更好理解。从流中读取类的描述信息 ObjectStreamClass 实例，通过这个对象就可以创建出序列化的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">ObjectStreamClass</span> <span class="hljs-variable">desc</span> <span class="hljs-operator">=</span> readClassDesc(<span class="hljs-literal">false</span>);<br>...<br>  Object obj;<br><span class="hljs-keyword">try</span> &#123;<br>  	<span class="hljs-comment">//创建对应反序列化的对象</span><br>    obj = desc.isInstantiable() ? desc.newInstance() : <span class="hljs-literal">null</span>;<br>&#125; <span class="hljs-keyword">catch</span> (Exception ex) &#123;<br>    <span class="hljs-keyword">throw</span> (IOException) <span class="hljs-keyword">new</span> <span class="hljs-title class_">InvalidClassException</span>(<br>        desc.forClass().getName(),<br>        <span class="hljs-string">&quot;unable to create instance&quot;</span>).initCause(ex);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>读取该对象及其对象的父类的 ObjectStreamClass信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">ObjectStreamClass.ClassDataSlot[] slots = desc.getClassDataLayout();<br></code></pre></td></tr></table></figure>
+
+<p>然后遍历得到每一个 ObjectStreamClass 对象，将对应的属性值赋值给需要反序列化的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">defaultReadFields</span><span class="hljs-params">(Object obj, ObjectStreamClass desc)</span><br>    <span class="hljs-keyword">throws</span> IOException<br>&#123;<br>    Class&lt;?&gt; cl = desc.forClass();<br>    <span class="hljs-keyword">if</span> (cl != <span class="hljs-literal">null</span> &amp;&amp; obj != <span class="hljs-literal">null</span> &amp;&amp; !cl.isInstance(obj)) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassCastException</span>();<br>    &#125;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">primDataSize</span> <span class="hljs-operator">=</span> desc.getPrimDataSize();<br>    <span class="hljs-keyword">if</span> (primVals == <span class="hljs-literal">null</span> || primVals.length &lt; primDataSize) &#123;<br>        primVals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[primDataSize];<br>    &#125;<br>    bin.readFully(primVals, <span class="hljs-number">0</span>, primDataSize, <span class="hljs-literal">false</span>);<br>    <span class="hljs-keyword">if</span> (obj != <span class="hljs-literal">null</span>) &#123;<br>        desc.setPrimFieldValues(obj, primVals);<br>    &#125;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">objHandle</span> <span class="hljs-operator">=</span> passHandle;<br>    <span class="hljs-comment">//从 ObjectStreamClass 中得到对象的所有 Field 信息</span><br>    ObjectStreamField[] fields = desc.getFields(<span class="hljs-literal">false</span>);<br>    Object[] objVals = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Object</span>[desc.getNumObjFields()];<br>    <span class="hljs-type">int</span> <span class="hljs-variable">numPrimFields</span> <span class="hljs-operator">=</span> fields.length - objVals.length;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; i &lt; objVals.length; i++) &#123;<br>        <span class="hljs-type">ObjectStreamField</span> <span class="hljs-variable">f</span> <span class="hljs-operator">=</span> fields[numPrimFields + i];<br>        objVals[i] = readObject0(f.isUnshared());<br>        <span class="hljs-keyword">if</span> (f.getField() != <span class="hljs-literal">null</span>) &#123;<br>            handles.markDependency(objHandle, passHandle);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span> (obj != <span class="hljs-literal">null</span>) &#123;<br>    		<span class="hljs-comment">//将数据保存到对象中去</span><br>        desc.setObjFieldValues(obj, objVals);<br>    &#125;<br>    passHandle = objHandle;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="反射"><a href="#反射" class="headerlink" title="反射"></a>反射</h2><p>反射：程序运行期间，动态获取一个类的全部信息、并且动态调用它的构造方法、普通方法、成员变量的能力。正常代码是编译期就确定要调用哪个类、哪个方法；反射是运行时才决定操作哪个类、执行哪个函数。用我的大白话来说反射就是操作Class，所谓反射就是让我们能够重新对这个类进行操作。</p>
+<h3 id="反射初使用"><a href="#反射初使用" class="headerlink" title="反射初使用"></a>反射初使用</h3><p>先简单来read一下反射的使用过程：</p>
+<ol>
+<li><strong>获取 <code>Class</code> 对象</strong>：首先获取目标类的 <code>Class</code> 对象。</li>
+<li><strong>获取成员信息</strong>：通过 <code>Class</code> 对象，可以获取类的字段、方法、构造函数等信息。</li>
+<li><strong>操作成员</strong>：通过反射 API 可以读取和修改字段的值、调用方法以及创建对象。</li>
+</ol>
+<p>从上面我们就能看出，使用的第一步当然是<strong>获取class对象</strong>，存在以下几种方法：</p>
+<ul>
+<li><p>类名.class</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">Class</span>&lt;<span class="hljs-keyword">User</span>&gt; clazz = <span class="hljs-keyword">User</span>.<span class="hljs-keyword">class</span>;<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>对象.getClass()</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">User</span> u = <span class="hljs-built_in">new</span> <span class="hljs-keyword">User</span>();<br><span class="hljs-keyword">Class</span>&lt;? extends <span class="hljs-keyword">User</span>&gt; clazz2 = u.getClass();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>全限定类名字符串加载</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coq"><span class="hljs-keyword">Class</span>&lt;?&gt; clazz3 = <span class="hljs-keyword">Class</span>.forName(<span class="hljs-string">&quot;com.xxx.User&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>一般这个是最常用的，我们来详细讲讲</p>
+<p>每个类在 JVM 中都有一个与之相关的 Class 对象，Class对象就是一个类在 JVM 中的元数据模板。调用<code>forname</code>的过程中会读取class字节码，生成Class对象，且会自动执行静态代码块 static {}、给静态变量赋值。这里需要注意一个点，这个生成的是Class对象，并没有new实例。<code>forname</code>使用的时候要注意下面几点：在<code>forName(&quot;com.xxx.User&quot;)</code>中要用全限定类名（完整包名 + 类名），否则会报<code>ClassNotFoundException</code>；受当前线程类加载器限制，找不到类就抛出异常；基本类型无法使用<code>forname</code>进行反射，使用<code>Class.forName(&quot;int&quot;)</code> 将会报错，只能 <code>int.class</code></p>
+</li>
+</ul>
+<p><strong>创建对象</strong></p>
+<p>来个栗子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Class.forName(<span class="hljs-string">&quot;java.lang.String&quot;</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor().newInstance();<br></code></pre></td></tr></table></figure>
+
+<p>上面就是一个创建String实例对象<code>obj</code>的案例，<code>newInstance()</code>可以直接执行构造方法创建实例，如果直接使用<code>class.newInstance()</code>会默认调用无参构造，但该方法是比较老的了，JDK9 就被移除。代码中的<code>getDeclaredConstructor().newInstance()</code>就是调用指定构造方法来创建实例，填写参数类型就会调用对应构造方法。<code>getDeclaredConstructor()</code>可以调用本类所有构造器，包含私有构造，而<code>getConstructor()</code>方法只能拿 public 公开构造器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-title function_">User</span><span class="hljs-params">()</span>&#123;&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">User</span><span class="hljs-params">(String name)</span>&#123;&#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">User</span><span class="hljs-params">(String name,<span class="hljs-type">int</span> age)</span>&#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;User&gt; clazz = User.class;<br><br><span class="hljs-comment">// 匹配无参构造</span><br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor().newInstance();<br><br><span class="hljs-comment">// 匹配 String 单个参数构造</span><br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor(String.class).newInstance();<br><br><span class="hljs-comment">// 匹配 String + int 构造</span><br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> clazz.getDeclaredConstructor(String.class,<span class="hljs-type">int</span>.class).newInstance();<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>访问字段</strong></p>
+<p>可以通过反射访问和修改类的字段：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Person.class;<br><span class="hljs-type">Field</span> <span class="hljs-variable">field</span> <span class="hljs-operator">=</span> clazz.getDeclaredField(<span class="hljs-string">&quot;name&quot;</span>);<br>field.setAccessible(<span class="hljs-literal">true</span>); <span class="hljs-comment">// 如果字段是私有的，需要设置为可访问</span><br><span class="hljs-type">Object</span> <span class="hljs-variable">value</span> <span class="hljs-operator">=</span> field.get(personInstance); <span class="hljs-comment">// 获取字段值</span><br>field.set(personInstance, <span class="hljs-string">&quot;New Name&quot;</span>); <span class="hljs-comment">// 设置字段值</span><br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>调用方法</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Person.class;<br><span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> clazz.getMethod(<span class="hljs-string">&quot;sayHello&quot;</span>);<br>method.invoke(personInstance);<br><br><span class="hljs-type">Method</span> <span class="hljs-variable">methodWithArgs</span> <span class="hljs-operator">=</span> clazz.getMethod(<span class="hljs-string">&quot;greet&quot;</span>, String.class);<br>methodWithArgs.invoke(personInstance, <span class="hljs-string">&quot;World&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>获取构造函数</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Person.class;<br>Constructor&lt;?&gt; constructor = clazz.getConstructor(String.class, <span class="hljs-type">int</span>.class);<br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> constructor.newInstance(<span class="hljs-string">&quot;John&quot;</span>, <span class="hljs-number">30</span>);<br></code></pre></td></tr></table></figure>
+
+<p>注意这里使用私有构造也要先设置可访问</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Person.class;<br>Constructor&lt;?&gt; constructor = clazz.getConstructor(String.class, <span class="hljs-type">int</span>.class);<br>constructor.setAccessible(<span class="hljs-literal">true</span>);<br><span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> constructor.newInstance(<span class="hljs-string">&quot;John&quot;</span>, <span class="hljs-number">30</span>);<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="反射的作用"><a href="#反射的作用" class="headerlink" title="反射的作用"></a>反射的作用</h3><p>通用作用：</p>
+<ul>
+<li>让java具有动态性</li>
+<li>修改已有对象的属性</li>
+<li>动态生成对象</li>
+<li>动态调用方法</li>
+<li>操作内部类和私有方法</li>
+</ul>
+<p>在反序列化漏洞中的利用：</p>
+<ul>
+<li>定制需要的对象</li>
+<li>通过invoke调用除了同名函数以外的函数</li>
+<li>通过Class类创建对象，引入不能序列化的类</li>
+</ul>
+<h2 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h2><p>老规矩，我们在开始简述动态代理原理之前，先来讲讲动态代理是什么且正常情况有什么作用，知道它的用处才能带着思考学习原理。</p>
+<p>我们在写了一个类后，在后续研发和拓展中，总是会需要添加功能，这个时候我们可能会想到修改源码或写个继承类，但如果我们需要多个继承类，且继承类之间其实改变不大，那我们的代码会太臃肿，维护难度会成倍增加，动态代理就是为了解决这种情况而诞生的。用一句话来总结：动态代理的作用是在不修改原有类源码的前提下，给现有方法增加“额外动作”。而动态代理的所谓动态就是在需要代理的时候再动态生成，我们来通过代码来看一下动态代理的实现。</p>
+<h4 id="JDK动态代理"><a href="#JDK动态代理" class="headerlink" title="JDK动态代理"></a>JDK动态代理</h4><p>JDK动态代理主要涉及两个类：<code>java.lang.reflect.Proxy</code> 和 <code>java.lang.reflect.InvocationHandler</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.reflect.InvocationHandler;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.lang.reflect.Proxy;<br><br><span class="hljs-comment">// ============= 1. 接口和真实类 =============</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">FoodService</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">serve</span><span class="hljs-params">(String food)</span>;<br>&#125;<br><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Chef</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">FoodService</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">serve</span><span class="hljs-params">(String food)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;厨师正在做: &quot;</span> + food);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// ============= 2. 核心：动态代理的工作台（InvocationHandler） =============</span><br><span class="hljs-comment">// 你可以把它理解为“万能服务员模板”，它不关心代理谁，只关心代理后干什么。</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">UniversalWaiterHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InvocationHandler</span> &#123;<br>    <br>    <span class="hljs-keyword">private</span> Object target; <span class="hljs-comment">// 目标对象（无论厨师、司机、医生都可以）</span><br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">UniversalWaiterHandler</span><span class="hljs-params">(Object target)</span> &#123;<br>        <span class="hljs-built_in">this</span>.target = target;<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 这个方法会在代理对象每次调用方法时被触发</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> proxy  生成的代理对象本身（一般不用）</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> method 当前被调用的方法（例如 serve）</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> args   方法参数（例如 &quot;红烧肉&quot;）</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        <span class="hljs-comment">// ---- 前置增强（点餐日志） ----</span><br>        System.out.println(<span class="hljs-string">&quot;[动态代理] 记录操作日志，方法名：&quot;</span> + method.getName());<br>        <br>        <span class="hljs-comment">// ---- 调用真正的目标对象（执行厨师做菜） ----</span><br>        <span class="hljs-type">Object</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> method.invoke(target, args);<br>        <br>        <span class="hljs-comment">// ---- 后置增强（上菜完毕） ----</span><br>        System.out.println(<span class="hljs-string">&quot;[动态代理] 操作结束，清理现场\n&quot;</span>);<br>        <br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// ============= 3. 生产代理对象的工厂（JDK提供） =============</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-comment">// 真实厨师</span><br>        <span class="hljs-type">Chef</span> <span class="hljs-variable">realChef</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Chef</span>();<br>        <br>        <span class="hljs-comment">// 创建处理器（把厨师交给万能服务员）</span><br>        <span class="hljs-type">InvocationHandler</span> <span class="hljs-variable">handler</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UniversalWaiterHandler</span>(realChef);<br>        <br>        <span class="hljs-comment">// JDK 动态代理的核心 API</span><br>        <span class="hljs-type">FoodService</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> (FoodService) Proxy.newProxyInstance(<br>            realChef.getClass().getClassLoader(), <span class="hljs-comment">// 类加载器</span><br>            realChef.getClass().getInterfaces(),  <span class="hljs-comment">// 必须传接口数组</span><br>            handler                              <span class="hljs-comment">// 处理器</span><br>        );<br>        <br>        <span class="hljs-comment">// 此时 proxy 就是“内存里自动生成的服务员”</span><br>        <span class="hljs-comment">// 调用代理的方法</span><br>        proxy.serve(<span class="hljs-string">&quot;宫保鸡丁&quot;</span>);<br>        proxy.serve(<span class="hljs-string">&quot;麻婆豆腐&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight tex"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs tex">[动态代理] 记录操作日志，方法名：serve<br>厨师正在做: 宫保鸡丁<br>[动态代理] 操作结束，清理现场<br><br>[动态代理] 记录操作日志，方法名：serve<br>厨师正在做: 麻婆豆腐<br>[动态代理] 操作结束，清理现场<br></code></pre></td></tr></table></figure>
+
+<p>在JDK动态代理中，要注意JDK动态代理必须要求目标类实现接口，原因是<code>Proxy.newProxyInstance()</code> 在运行时，会在内存中动态生成一个全新的类（这个类叫 <code>$Proxy0</code>）。这个新类已经被规定必须继承 <code>java.lang.reflect.Proxy</code> 这个父类。而Java 是<strong>单继承</strong>的。既然 <code>$Proxy0</code> 已经继承了 <code>Proxy</code>，它就不能再继承其他类了既然不能继承类，它怎么拥有方法呢？只能通过<strong>实现接口</strong>。因为 Java 允许<strong>实现多个接口</strong>。所以，JDK 代理生成的 <code>$Proxy0</code> 会实现传进去的<code>Chef.class.getInterfaces()</code>。当调用 <code>proxy.serve()</code> 时，<code>$Proxy0</code> 内部会通过接口方法表，精准地找到<code>InvocationHandler.invoke(proxy, method, args)</code>，proxy是代理对象，method是调用的方法，args是传入的参数。这个<code>invoke()</code>不是 JDK 的 Java 源码调用的，是运行时内存里动态生成的代理类（<code>$Proxy0</code>）的字节码，直接硬编码调用你的<code> handler.invoke ()</code>。</p>
+<h4 id="CGLIB动态代理"><a href="#CGLIB动态代理" class="headerlink" title="CGLIB动态代理"></a>CGLIB动态代理</h4><p>和JDK不同，CGLIB的目标类并不需要实现接口，而是自己的代理类来继承目标类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> net.sf.cglib.proxy.Enhancer;<br><span class="hljs-keyword">import</span> net.sf.cglib.proxy.MethodInterceptor;<br><span class="hljs-keyword">import</span> net.sf.cglib.proxy.MethodProxy;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-comment">// 1. 没有接口的普通类（注意：不能是 final，方法不能是 final）</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Chef</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">serve</span><span class="hljs-params">(String food)</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;厨师正在做: &quot;</span> + food);<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// 2. CGLIB 的拦截器（类似 JDK 的 InvocationHandler）</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">CglibInterceptor</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">MethodInterceptor</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">intercept</span><span class="hljs-params">(Object obj, Method method, Object[] args, MethodProxy proxy)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        System.out.println(<span class="hljs-string">&quot;[CGLIB日志] 开始做: &quot;</span> + args[<span class="hljs-number">0</span>]);<br>        <span class="hljs-type">Object</span> <span class="hljs-variable">result</span> <span class="hljs-operator">=</span> proxy.invokeSuper(obj, args); <span class="hljs-comment">// 调用父类（真实类）的方法</span><br>        System.out.println(<span class="hljs-string">&quot;[CGLIB日志] 做完啦&quot;</span>);<br>        <span class="hljs-keyword">return</span> result;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Main</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Enhancer</span> <span class="hljs-variable">enhancer</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Enhancer</span>();<br>        enhancer.setSuperclass(Chef.class);       <span class="hljs-comment">// 设置父类</span><br>        enhancer.setCallback(<span class="hljs-keyword">new</span> <span class="hljs-title class_">CglibInterceptor</span>()); <span class="hljs-comment">// 设置拦截器</span><br>        <br>        <span class="hljs-type">Chef</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> (Chef) enhancer.create();    <span class="hljs-comment">// 创建代理（子类）</span><br>        proxy.serve(<span class="hljs-string">&quot;水煮鱼&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs etx">[CGLIB日志] 开始做: 水煮鱼<br>厨师正在做: 水煮鱼<br>[CGLIB日志] 做完啦<br></code></pre></td></tr></table></figure>
+
+<p>从上面的例子各位师傅可以明显看到我们调用目标类方法并不使用反射机制<code>method.invoke(target, args)</code>，而是直接<code>proxy.invokeSuper(obj, args)</code>，这里利用的是<strong>FastClass 机制（直接索引）</strong>，CGLIB 为每个代理类生成了一个 <strong><code>FastClass</code></strong>，给每个方法分配了一个<strong>整型索引（int index）</strong>。调用时直接 <code>invoke(index)</code>，类似数组下标访问，<strong>省去了反射的查找开销</strong>。</p>
+<p>CGLIB 代理在内存中生成 3 个类：</p>
+<ol>
+<li><strong>代理主类</strong>：<code>Chef$$EnhancerByCGLIB$$xxx</code>（继承 Chef 的子类）</li>
+<li><strong>FastClass 索引类</strong>：<code>Chef$$FastClassByCGLIB$$xxx</code>（给父类方法编索引号）</li>
+<li><strong>代理方法的 FastClass</strong>：<code>Chef$$EnhancerByCGLIB$$FastClass$$xxx</code>（给代理类自身的方法编索引号）</li>
+</ol>
+<p>这也是CGLIB时间快，内存开销大的原因</p>
+<h3 id="动态代理的利用"><a href="#动态代理的利用" class="headerlink" title="动态代理的利用"></a>动态代理的利用</h3><p>我们来个栗子看看动态代理在反序列化中到底怎么用吧，毕竟这才是我们真正的目的</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.io.*;<br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationHandler;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.lang.reflect.Proxy;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><br><span class="hljs-comment">// ========== 1. 定义一个接口  ==========</span><br><span class="hljs-keyword">interface</span> <span class="hljs-title class_">IAttack</span> &#123;<br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">doNothing</span><span class="hljs-params">()</span>; <span class="hljs-comment">// 空方法，仅用于占位</span><br>&#125;<br><br><span class="hljs-comment">// ========== 2. 恶意 InvocationHandler ==========</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">EvilHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">InvocationHandler</span> &#123;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> Object <span class="hljs-title function_">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable &#123;<br>        <span class="hljs-comment">// 当代理对象的任何方法被调用时，都会触发这里的代码</span><br>        System.out.println(<span class="hljs-string">&quot;[!] 恶意代码被执行！正在打开计算器...&quot;</span>);<br>        Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc.exe&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-comment">// ========== 3. 主程序 ==========</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DynamicProxyDeserialAttack</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-comment">// ---- 步骤 1：构造恶意代理对象 ----</span><br>        <span class="hljs-comment">// 创建代理对象，它实现了 IAttack 接口，所有方法调用都会转到 EvilHandler.invoke()</span><br>        <span class="hljs-type">IAttack</span> <span class="hljs-variable">proxy</span> <span class="hljs-operator">=</span> (IAttack) Proxy.newProxyInstance(<br>                IAttack.class.getClassLoader(),<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">Class</span>[]&#123;IAttack.class&#125;,<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">EvilHandler</span>()<br>        );<br><br>        <span class="hljs-comment">// ---- 步骤 2：将代理对象放入 HashMap 的 Key 中 ----</span><br>        HashMap&lt;Object, Object&gt; map = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HashMap</span>&lt;&gt;();<br>        map.put(proxy, <span class="hljs-string">&quot;value&quot;</span>); <span class="hljs-comment">// 注意：这里代理对象作为 Key</span><br><br>        <span class="hljs-comment">// ---- 步骤 3：序列化 HashMap 到字节数组（模拟网络传输或缓存） ----</span><br>        <span class="hljs-type">ByteArrayOutputStream</span> <span class="hljs-variable">baos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayOutputStream</span>();<br>        <span class="hljs-type">ObjectOutputStream</span> <span class="hljs-variable">oos</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectOutputStream</span>(baos);<br>        oos.writeObject(map);<br>        oos.close();<br>        <span class="hljs-type">byte</span>[] serializedData = baos.toByteArray();<br><br>        System.out.println(<span class="hljs-string">&quot;[+] 序列化完成，准备反序列化...&quot;</span>);<br><br>        <span class="hljs-comment">// ---- 步骤 4：反序列化（模拟攻击者输入恶意数据） ----</span><br>        <span class="hljs-type">ByteArrayInputStream</span> <span class="hljs-variable">bais</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayInputStream</span>(serializedData);<br>        <span class="hljs-type">ObjectInputStream</span> <span class="hljs-variable">ois</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ObjectInputStream</span>(bais);<br>        HashMap&lt;?, ?&gt; deserializedMap = (HashMap&lt;?, ?&gt;) ois.readObject();<br>        ois.close();<br><br>        System.out.println(<span class="hljs-string">&quot;[+] 反序列化完成，此时已经触发了漏洞！&quot;</span>);<br>        <span class="hljs-comment">// 注意：为了触发代理的 invoke，这里其实不需要额外调用任何方法，</span><br>        <span class="hljs-comment">// 因为 HashMap 的 readObject 内部会调用 key.hashCode()，而 hashCode() 是 Object 的方法，</span><br>        <span class="hljs-comment">// 动态代理会对所有方法（包括 hashCode()）进行拦截，所以反序列化过程中就已经触发了 invoke。</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>计算哈希值时，会调用 <code>key.hashCode()</code>。由于我们的 key 是一个<strong>动态代理对象</strong>，它实现了 <code>IAttack</code> 接口，而 <code>hashCode()</code> 是 <code>Object</code> 的方法，代理会对所有方法（包括继承自 <code>Object</code> 的方法）进行拦截。因此，<strong><code>hashCode()</code> 的调用会触发 <code>EvilHandler.invoke()</code></strong>，从而执行恶意代码。</p>
+<p>在反序列化利用中，攻击者会构建一个代理对象，当这个代理对象的某个方法（如 <code>toString()</code>, <code>hashCode()</code>等）在反序列化或后续处理中被隐式调用时，其 <code>invoke</code> 方法就会被触发，从而执行攻击者预设的恶意代码</p>
+<h2 id="类加载机制"><a href="#类加载机制" class="headerlink" title="类加载机制"></a>类加载机制</h2><p>先来解释一下类加载机制吧</p>
+<p>Java 文件编译后是 <code>.class</code> 字节码（一堆二进制数据）。类加载器就是 <strong>JVM 的户籍警</strong>，它的工作是：</p>
+<blockquote>
+<p><strong>把二进制字节码（byte[]）搬进内存，解析成 JVM 认识的方法区数据结构，最后生成一个 <code>java.lang.Class</code> 对象放进去。</strong></p>
+</blockquote>
+<p>写的类，如果不经过类加载，在 JVM 里就是一堆废纸。</p>
+<p>其中类加载的过程包括了<code>加载</code>、<code>验证</code>、<code>准备</code>、<code>解析</code>、<code>初始化</code>五个阶段。</p>
+<p>这边我们主要需要注意的就是初始化阶段，在初始化阶段，JVM 会执行 <strong><code>&lt;clinit&gt;()</code></strong> 方法。这个方法里包含两样东西：</p>
+<ol>
+<li><strong>静态变量的显式赋值</strong>：比如 <code>static int a = 10;</code>（把 0 变成 10）。</li>
+<li><strong>静态代码块 <code>static {}</code></strong>：里面你写的所有逻辑。</li>
+</ol>
+<p>在类首次被加载到JVM内存时会自动执行静态代码块，所以只能调用一次，各位师傅看到这里想必两眼放光了吧，都自动执行了，那如果在静态代码块中写入恶意方法，那不相当于想干嘛干嘛呗。但这里有个小tip：我们在静态代码块中只能调用静态方法，实例方法是没用的。</p>
+<p>知道了静态代码块的好处，我们现在就要知道如何让它自动执行了，从上面各位师傅也可以明白下面我们就要知道如何初始化类:</p>
+<ul>
+<li><p>Class.forName(“全类名”)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Class&lt;?&gt; clazz = Class.forName(<span class="hljs-string">&quot;com.demo.A&quot;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>这里要注意一个点，<code>forName()</code>的第二个参数默认为true，此时会初始化，但如果改为false则不会初始化</p>
+</li>
+<li><p>new创建类实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">User</span> <span class="hljs-variable">u</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">User</span>();<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>子类初始化，会先触发父类初始化</p>
+</li>
+</ul>
+<p>讲到这里，那就顺便提一下实例代码块（也叫构造代码块）吧</p>
+<p>实例代码块在构造器被调用时会自动调用，下面是具体情况：</p>
+<ul>
+<li><p>new创建类实例</p>
+</li>
+<li><p>反射的 <code>Constructor.newInstance()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs JAVA">Constructor&lt;Demo&gt; con = Demo.class.getConstructor();<br><span class="hljs-type">Demo</span> <span class="hljs-variable">d</span> <span class="hljs-operator">=</span> con.newInstance(); <span class="hljs-comment">// 实例代码块 → 构造方法</span><br></code></pre></td></tr></table></figure>
+</li>
+<li><p>子类构造器隐式调用父类构造器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Parent</span> &#123;<br>    &#123; System.out.println(<span class="hljs-string">&quot;Parent 实例块&quot;</span>); &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Parent</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;Parent 构造器&quot;</span>); &#125;<br>&#125;<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Child</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Parent</span> &#123;<br>    &#123; System.out.println(<span class="hljs-string">&quot;Child 实例块&quot;</span>); &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Child</span><span class="hljs-params">()</span> &#123; System.out.println(<span class="hljs-string">&quot;Child 构造器&quot;</span>); &#125;<br>&#125;<br><span class="hljs-keyword">new</span> <span class="hljs-title class_">Child</span>(); <br><span class="hljs-comment">// 输出顺序：Parent 实例块 → Parent 构造器 → Child 实例块 → Child 构造器</span><br></code></pre></td></tr></table></figure></li>
+</ul>
+<p>看完是不是觉得实例代码块的调用方式和静态代码块的调用方式非常的像，但这里最重要的区别就是静态代码块是在类被加载进JVM时调用的，而实例代码块是在构造器被调用时调用的。用new实例来举例，我们只有在首次以这个类为模版new实例的时候才会将类加载进JVM，后续如果再new由于我们已经将类加载进过JVM了，不会再次加载。而每次new都需要调用构造器来创建实例，所以每次new都会自动调用实例代码块。</p>
+<p>实例代码块还有一个最大的好处是我们可以调用实例方法，那既然他的好处这么大，为什么我们不使用利用实例代码块，而是选择去使用静态代码块呢</p>
+<p>我们在看利用点的时候不能仅仅看到有多大的利用能力，还要注意他的利用可行性，在这里我们明显可以看出静态代码块是更容易被利用的，我们只需要在类加载的时候就可以自动调用静态代码块，而实例代码块的利用硬性要求构造器运行，这就让我们的利用显得较为困难。且在标准的反序列化中，我们是没有利用构造器的。来看看简化的readObject</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java">Object <span class="hljs-title function_">readObject</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-comment">// 1. 读取类描述符，加载类（触发 static &#123;&#125; ）</span><br>    <span class="hljs-type">Class</span> <span class="hljs-variable">clazz</span> <span class="hljs-operator">=</span> resolveClass(desc);<br>    <br>    <span class="hljs-comment">// 直接通过 Unsafe.allocateInstance() 分配内存</span><br>    <span class="hljs-comment">//   这个 API 绕过构造器，只分配内存，不调用 &lt;init&gt;</span><br>    <span class="hljs-type">Object</span> <span class="hljs-variable">obj</span> <span class="hljs-operator">=</span> Unsafe.getUnsafe().allocateInstance(clazz);<br>    <br>    <span class="hljs-comment">// 3. 从流中读取字段值，反射塞进对象</span><br>    <span class="hljs-keyword">for</span> (Field field : fields) &#123;<br>        field.set(obj, readFieldValue());<br>    &#125;<br>    <span class="hljs-keyword">return</span> obj;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>攻击者追求的是“只要反序列化就炸”，所以首选静态块。</p>
+<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><p>当一个类加载器收到「加载 XX 类」的请求时，<strong>不会自己先去加载</strong>，而是先把请求丢给自己的父加载器；</p>
+<p>父加载器再丢给它的父，一直递到最顶层的引导类加载器；</p>
+<p>只有顶层父加载器说 “我找不到这个类”，当前加载器才允许自己去加载。</p>
+<ul>
+<li>三层加载器父子关系（从上到下）</li>
+</ul>
+<ol>
+<li>BootstrapClassLoader（引导加载器，最顶层，父为 null）</li>
+<li>ExtClassLoader（扩展加载器，父是 Bootstrap）</li>
+<li>AppClassLoader（应用加载器，你代码默认的加载器，父是 Ext）</li>
+</ol>
+<img src="1.png" srcset="/img/loading.gif" lazyload alt="image-20260811225542234" style="zoom: 50%;" />
+
+<p>但这里要注意，这里所谓的父子关系只是概念上的，并非真正继承的父子关系，而是采用通过 <code>parent</code> 成员变量建立的组合实现的。</p>
+<h4 id="为什么需要双亲委派机制"><a href="#为什么需要双亲委派机制" class="headerlink" title="为什么需要双亲委派机制"></a>为什么需要双亲委派机制</h4><p>我们的Java在运行之前，首先需要把Java代码转换成<code>字节码</code>，即class文件。</p>
+<p>然后JVM需要把字节码通过一定的方式加载到内存中的<code>运行时数据区</code>。</p>
+<p>这种方式就是<code>类加载器</code>（ClassLoader）。</p>
+<p>再通过加载、验证、准备、解析、初始化这几个步骤完成类加载过程，然后再由jvm执行引擎的解释器和JIT即时编译器去将字节码指令转换为本地机器指令进行执行。</p>
+<p>我们在使用类加载器加载类的时候，会面临下面几个问题：</p>
+<ol>
+<li>如何保证类不会被重复加载？类重复加载会出现很多问题。</li>
+<li>类加载器是否允许用户自定义？</li>
+<li>如果允许用户自定义，如何保证类文件的安全性？</li>
+<li>如何保证加载的类的完整性？</li>
+</ol>
+<p>为了解决上面的这一系列的问题，我们必须要引入某一套机制，这套机制就是：<code>双亲委派机制</code>。</p>
+<p>虽然在反序列化的过程中你可能无法很好的利用上双亲委派机制，但对于我们理解JVM到底是在做什么以及理解其原理是非常有用的。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="print-no-link">#java反序列化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>java反序列化入门篇-01-概念初相识</div>
+      <div>http://blog.yunli1.com/2026/01/14/java反序列化入门篇-01-概念初相识/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yunli</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年1月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/01/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BA%86%E8%A7%A3XSS/" title="一篇文章了解XSS">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">一篇文章了解XSS</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/" title="WOTOP10芝CSRF篇">
+                        <span class="hidden-mobile">WOTOP10芝CSRF篇</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo ⭐</span></a> <a href="https://blog.yunli1.com/" target="_blank" rel="nofollow noopener"><span>yunli</span></a> <br> <span>主题</span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>fluid</span></a> <br> <span id="busuanzi_container_site_pv">总访问量：<span id="busuanzi_value_site_pv"></span> 次</span> <br> <span id="busuanzi_container_site_uv">访客数：<span id="busuanzi_value_site_uv"></span> 人</span> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

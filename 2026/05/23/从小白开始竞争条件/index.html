@@ -1,0 +1,1087 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/touxiang.ico">
+  <link rel="icon" href="/img/touxiang.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yunli">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="什么是竞争条件   在处理并发请求时（例如上传文件与将文件存入数据库；支付订单与付款过程），当他们这些行为并未严格进行原子性保护，每个请求之间会存在极短的时间间隔，可通过这个极短的时间间隔实现一些恶意行为（在支付与付款期间将更多订单加入，但支付金额不变；在使用优惠卷时与优惠券核验的状态转变过程加入多步相同的优惠卷使用行为，优惠卷状态来不及更新就已经使用，使得优惠卷多次使用）。而在这个极短时间内行为">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从小白开始竞争条件">
+<meta property="og:url" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/index.html">
+<meta property="og:site_name" content="noob weber">
+<meta property="og:description" content="什么是竞争条件   在处理并发请求时（例如上传文件与将文件存入数据库；支付订单与付款过程），当他们这些行为并未严格进行原子性保护，每个请求之间会存在极短的时间间隔，可通过这个极短的时间间隔实现一些恶意行为（在支付与付款期间将更多订单加入，但支付金额不变；在使用优惠卷时与优惠券核验的状态转变过程加入多步相同的优惠卷使用行为，优惠卷状态来不及更新就已经使用，使得优惠卷多次使用）。而在这个极短时间内行为">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/1.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/2.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/3.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/4.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/5.png">
+<meta property="article:published_time" content="2026-05-23T12:55:12.000Z">
+<meta property="article:modified_time" content="2026-05-24T02:04:34.636Z">
+<meta property="article:author" content="yunli">
+<meta property="article:tag" content="竞争条件">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://blog.yunli1.com/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/1.png">
+  
+  
+  
+  <title>从小白开始竞争条件 - noob weber</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.yunli1.com","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>yunli&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/links/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-link-fill"></i>
+                  <span>友链</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从小白开始竞争条件"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-23 20:55" pubdate>
+          2026年5月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">从小白开始竞争条件</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2>什么是竞争条件
+</h2>
+
+<p>在处理并发请求时（例如上传文件与将文件存入数据库；支付订单与付款过程），当他们这些行为并未严格进行原子性保护，每个请求之间会存在极短的时间间隔，可通过这个极短的时间间隔实现一些恶意行为（在支付与付款期间将更多订单加入，但支付金额不变；在使用优惠卷时与优惠券核验的状态转变过程加入多步相同的优惠卷使用行为，优惠卷状态来不及更新就已经使用，使得优惠卷多次使用）。而在这个极短时间内行为的竞争使用即为竞争条件。可能发生碰撞的时间段被称为“竞争窗口”。</p>
+<h2>争夺竞争窗口前提</h2>
+
+<p>竞争条件其实就是为了竞争修改状态，而这个状态必须是服务端持久化的共享状态，客户端的状态（如JWT里带个token）没法被并发篡改。</p>
+<ul>
+<li><strong>可利用</strong>：数据库记录、服务器端Session、缓存（Redis等）、文件系统中的文件。</li>
+<li><strong>可忽略</strong>：完全依赖客户端Cookie&#x2F;JWT传递的状态</li>
+</ul>
+<p>竞争条件本质是两个线程同时读写同一块内存&#x2F;存储。如果每个请求都自带状态，互不影响，就没有冲突。</p>
+<h2>竞争条件攻击方式</h2>
+
+<p>在竞争条件中，主要有两种攻击方式，一种是字节同步技术，一种是单包技术。但字节同步技术是当时HTTP&#x2F;1.1时代比较适配的产物，随着HTTP&#x2F;2多路复用技术的出现，允许我们在一个TCP连接并发所有请求，我们不必再构建多个TCP连接，繁琐且效率低的字节同步技术也就慢慢退环境了。</p>
+<table>
+<thead>
+<tr>
+<th align="left">方式</th>
+<th align="left"><strong>单包攻击 (Single-Packet Attack)</strong></th>
+<th align="left"><strong>最后字节同步 (Last-Byte Sync)</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>适用协议</strong></td>
+<td align="left"><strong>HTTP&#x2F;2</strong> (主流现代网站)</td>
+<td align="left"><strong>HTTP&#x2F;1.1</strong> (老旧或特定配置网站)</td>
+</tr>
+<tr>
+<td align="left"><strong>核心原理</strong></td>
+<td align="left">利用HTTP&#x2F;2的<strong>多路复用</strong>，在一开始就保留每个请求的最后一小片数据，待所有请求都准备好后，一次性发出这些“最终片段”，由操作系统将其打包进<strong>单个TCP数据包</strong>中发出。</td>
+<td align="left">同时建立<strong>多个HTTP&#x2F;1.1连接</strong>，在每个连接上预先发送请求的绝大部分内容（仅保留最后一个字节）。最后，再同时发出这个“最后字节”，利用TCP机制使它们在极短时间内到达</td>
+</tr>
+<tr>
+<td align="left"><strong>并行请求数</strong></td>
+<td align="left"><strong>20-30个</strong>，足以应对绝大多数场景。</td>
+<td align="left"><strong>20-30个</strong>，但管理复杂，难以精确控制。</td>
+</tr>
+</tbody></table>
+<h2>方法论</h2>
+
+<p>竞争条件相对一般的漏洞来说比较抽象和没有这么明显，除了常见的情况外，还会存在一些我们难以直接想到的利用点。portswigger给我们提供一种比较通用的方法论，可以帮助我们更好发现竞争条件的利用点：</p>
+<h4 id="预测潜在碰撞"><a href="#预测潜在碰撞" class="headerlink" title="预测潜在碰撞"></a>预测潜在碰撞</h4><p>预测的关键在于效率。由于所有操作都是多步骤的，理想情况下，我们应该测试整个网站上所有可能的端点组合。但这并不现实——因此，我们需要预测漏洞可能出现的位置。一个看似诱人的方法是稍后尝试找到本文所述漏洞的复现版本——这固然简单易行，但却会错过一些令人兴奋的、尚未被发现的变种。</p>
+<p>首先，确定哪些对象具有您想要绕过的安全控制。这通常包括用户和会话，以及一些特定于业务的概念，例如订单。</p>
+<p>对于每个对象，我们需要识别所有写入或读取其数据的端点，并将这些数据用于重要用途。例如，用户数据可能存储在数据库表中，该表会因注册、个人资料编辑、密码重置发起和密码重置完成而发生更改。此外，网站的登录功能在创建会话时也可能会从用户表中读取关键数据。</p>
+<p>竞态条件漏洞需要发生“冲突”——即对共享资源进行两个并发操作。我们可以使用三个关键问题来排除不太可能导致冲突的端点。对于每个对象及其关联的端点，请问：</p>
+<h5 id="1）状态是如何存储的？"><a href="#1）状态是如何存储的？" class="headerlink" title="1）状态是如何存储的？"></a>1）状态是如何存储的？</h5><p>存储在持久化服务器端数据结构中的数据非常适合被利用。有些端点完全在客户端存储其状态，例如通过电子邮件发送 JWT 的密码重置功能——这些端点可以安全地忽略。</p>
+<p>应用程序通常会在用户会话中存储一些状态。这些状态通常会受到一定程度的保护，以防止被子状态篡改——稍后会详细介绍。</p>
+<h5 id="2）我们是在编辑还是在添加内容？"><a href="#2）我们是在编辑还是在添加内容？" class="headerlink" title="2）我们是在编辑还是在添加内容？"></a>2）我们是在编辑还是在添加内容？</h5><p>编辑现有数据的操作（例如更改帐户的主要电子邮件地址）存在很大的冲突风险，而简单地向现有数据追加操作（例如添加额外的电子邮件地址）则不太可能受到限制溢出攻击以外的任何攻击。</p>
+<h5 id="3）该操作的关键是什么？"><a href="#3）该操作的关键是什么？" class="headerlink" title="3）该操作的关键是什么？"></a>3）该操作的关键是什么？</h5><p>大多数端点都基于特定记录进行操作，这些记录通过“密钥”进行查找，例如用户名、密码重置令牌或文件名。要成功发起攻击，我们需要两次使用相同密钥的操作。例如，设想两种可能的密码重置实现方式：</p>
+<p><img src="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/1.png" srcset="/img/loading.gif" lazyload></p>
+<p>在第一种实现方式中，用户的密码重置令牌存储在数据库的users表中，提供的用户 ID充当密钥。如果攻击者同时使用两个请求触发两个不同用户 ID 的密码重置，则会修改两条不同的数据库记录，因此不会发生密钥冲突。通过识别密钥，您已经确定这种攻击可能不值得尝试。</p>
+<p>在第二种实现方式中，状态存储在用户的会话中，令牌存储操作以用户的会话 ID 为键。如果攻击者同时使用两个请求触发两个不同邮箱的重置，则这两个线程都会尝试修改同一会话的令牌和用户 ID属性，最终该会话可能包含一个用户的用户ID和发送给另一个用户的令牌。</p>
+<h4 id="探寻线索"><a href="#探寻线索" class="headerlink" title="探寻线索"></a>探寻线索</h4><p>既然我们已经选定了一些高价值的端点，现在是时候探寻线索了——寻找隐藏子状态存在的蛛丝马迹。我们目前无需造成实质性的攻击——我们的目标仅仅是引出一些线索。因此，你需要发送大量的请求，以最大程度地提高出现可见副作用的概率，并减少服务器端的抖动。你可以把这看作是一种基于混沌的策略——如果我们发现了什么有趣的东西，之后再去弄清楚到底发生了什么。</p>
+<p>准备好一系列请求，包括目标端点和参数，以触发所有相关的代码路径。尽可能使用多个请求，每次使用不同的输入值来多次触发每个代码路径。</p>
+<p>接下来，通过在每次请求之间间隔几秒钟发送请求混合包，来测试端点在正常情况下的行为。</p>
+<p>最后，使用单包攻击（如果不支持 HTTP&#x2F;2，则使用最后字节同步）一次性发出所有请求。您可以在 Turbo Intruder 中使用单包攻击模板来实现，也可以在 Repeater 中使用“并行发送组”选项来实现。</p>
+<p>分析结果，寻找与基准行为偏差的线索。这可能表现为一个或多个响应的变化，也可能是次级效应，例如不同的电子邮件内容或会话的明显变化。线索可能很微妙且违反直觉，因此如果您跳过基准测试步骤，就会错过漏洞。</p>
+<p>几乎任何信息都可能构成线索，但请密切关注请求处理时间。如果处理时间比预期短，则可能表明数据正在被传递到单独的线程，从而大大增加漏洞出现的可能性。如果处理时间比预期长，则可能表明存在资源限制，或者应用程序正在使用锁来避免并发问题。请注意，PHP 默认对 sessionid 进行锁，因此您需要为批处理中的每个请求使用单独的 session，否则它们将按顺序处理。</p>
+<h2>竞争条件情况</h2>
+
+<h3>1.限制溢出竞争条件</h3>
+
+<p>限制溢出：当某个功能具有使用次数限制（如验证码次数、验证码发送、优惠券使用、密码重置等），攻击者通过<strong>并发</strong>请求的方式，在极短时间内<strong>绕过次数限制或配额限制</strong>，从而<strong>过度使用</strong>本该受限的资源。</p>
+<p>例子：</p>
+<p>假设有一家在线商店，允许你在结账时输入促销代码，即可获得一次性订单折扣。要应用此折扣，应用程序可能会执行以下简要步骤：</p>
+<ol>
+<li>检查你是否尚未使用过此代码。</li>
+<li>将折扣应用于订单总额。</li>
+<li>更新数据库中的记录以反映你现在已使用此代码的事实。</li>
+</ol>
+<p>如果你稍后尝试重复使用此代码，则在流程开始时执行的初始检查应该会阻止你执行此操作：</p>
+<p><img src="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/2.png" srcset="/img/loading.gif" lazyload></p>
+<p>现在考虑一下，如果一个从未使用过此折扣码的用户几乎同时尝试使用两次，会发生什么情况：</p>
+<p><img src="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/3.png" srcset="/img/loading.gif" lazyload></p>
+<p>如你所见，应用程序会转换到一个临时子状态；也就是说，在请求处理完成之前，它会进入一个子状态，然后再次退出。在这种情况下，子状态从服务器开始处理第一个请求时开始，到服务器更新数据库以指示你已使用过此代码时结束。这引入了一个短暂的竞争窗口，在此期间，你可以随意多次重复领取折扣。</p>
+<p>这种攻击有很多种变体，包括：</p>
+<ul>
+<li>多次兑换礼品卡</li>
+<li>对产品进行多次评级</li>
+<li>提取或转移超过账户余额的现金</li>
+<li>重复使用单个 CAPTCHA 解决方案</li>
+<li>绕过反暴力破解速率限制</li>
+</ul>
+<p>限制超限是所谓的“检查时间到使用时间”(TOCTOU) 缺陷的一个子类型。</p>
+<p>竞争条件利用：</p>
+<ol>
+<li>确定具有某种安全影响或其他有用目的的一次性或速率受限的端点。</li>
+<li>快速连续地向此端点发出多个请求，看看是否可以超出此限制。</li>
+</ol>
+<p>主要挑战：要确保请求到达服务端的时间间隔不可太大，否则无法实现目标。即使同时发送请求也可能因为各种原因导致请求延误，无法碰撞</p>
+<p>（单包攻击是我们能够使请求碰撞的利用方法：其核心特征是攻击者只需发送<strong>一个特定构造的数据包（单个网络包）</strong>，即可触发目标系统的异常行为、漏洞利用或服务中断。这类攻击具有高效率、低成本和较强的隐蔽性。可利用bp将多个请求形成一个数据包发送给服务端）</p>
+<h3>2.绕过速率限制</h3>
+
+<p>速率限制：在登录密码等情况中，服务端会限制我们试错密码的速度，这种情况下单纯的暴力破解几乎无法起到有效作用。这种情况可利用竞争条件单包攻击。可以多个密码同时测试，虽然在三个左右密码的请求后就会被锁，但这段间隔时间其他密码都会尝试且返回。</p>
+<h3>3.单端点竞争</h3>
+
+<p>单端点：是指多个<strong>并发请求</strong>被发送到<strong>同一个接口（endpoint）</strong>，由于服务器端缺乏正确的并发控制机制，导致产生<strong>不一致的数据状态、越权行为或逻辑绕过</strong>。</p>
+<p>3.2.例子：</p>
+<p> 示例 1：余额重复转账</p>
+<p>接口：<code>POST /transfer</code></p>
+<p>假设该端点的处理逻辑如下伪代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> balance &gt;= amount:<br>    balance -= amount<br>    send_money_to(target)<br></code></pre></td></tr></table></figure>
+
+<p>攻击者并发发送两个转账请求，在判断余额和扣款之间插入第二个请求：</p>
+<ol>
+<li>请求 A：判断余额充足；</li>
+<li>请求 B：也判断余额充足；</li>
+<li>两个请求都成功发起转账，结果账户被多次扣款，或余额为负。</li>
+</ol>
+<p> <strong>结果：资金损失或非法重复操作。</strong></p>
+<p> 示例 2：重置密码令牌绕过</p>
+<p>接口：<code>POST /reset-password</code></p>
+<p>逻辑是这样的：</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable"><span class="hljs-keyword">if</span></span> <span class="hljs-variable">token</span> <span class="hljs-variable"><span class="hljs-keyword">in</span></span> <span class="hljs-variable">database</span>:<br>    <span class="hljs-function"><span class="hljs-title">reset_password</span>()</span><br>    <span class="hljs-function"><span class="hljs-title">delete_token</span>(<span class="hljs-variable">token</span>)</span><br></code></pre></td></tr></table></figure>
+
+<p>攻击者并发发起两个带有相同 token 的请求：</p>
+<ol>
+<li>请求 A 使用 token 并重置密码；</li>
+<li>请求 B 在 token 删除前也使用成功；</li>
+<li>攻击者能继续使用该 token。</li>
+</ol>
+<p><strong>结果：令牌多次使用，存在会话劫持、越权风险。</strong></p>
+<p> 示例 3：订单未支付却发货</p>
+<p>接口：<code>POST /checkout</code></p>
+<p>处理逻辑如下：</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable"><span class="hljs-keyword">if</span></span> <span class="hljs-variable">payment_verified</span>:<br>    <span class="hljs-function"><span class="hljs-title">create_order</span>()</span><br>    <span class="hljs-function"><span class="hljs-title">ship_goods</span>()</span><br></code></pre></td></tr></table></figure>
+
+<p>攻击者：</p>
+<ol>
+<li>并发发起两个 <code>checkout</code> 请求；</li>
+<li>其中一个请求付款完成，另一个请求未付款但也进入发货逻辑；</li>
+<li><strong>发货前的状态检查存在竞态窗口</strong>。</li>
+</ol>
+<p> <strong>结果：用户未支付商品却发货成功。</strong></p>
+<h3>4.多端口竞争</h3>
+
+<p>4.1.多端口竞争：是指攻击者<strong>并不是向同一个接口发送多个并发请求</strong>，而是利用<strong>不同接口（端点）之间共享数据或状态不一致</strong>的逻辑漏洞，在<strong>多个接口之间制造竞态条件</strong>，从而绕过业务逻辑、权限校验或触发非法操作。</p>
+<p>4.2.单端点与多端点对比</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>请求来源</th>
+<th>举例</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>单端点竞争条件</strong></td>
+<td>同一个接口（如 <code>/update</code>）</td>
+<td>并发两次余额转账</td>
+<td>接口本身处理不当</td>
+</tr>
+<tr>
+<td><strong>多端点竞争条件</strong></td>
+<td>不同接口（如 <code>/apply-coupon</code> + <code>/checkout</code>）</td>
+<td>一个端点生成资源，另一个利用</td>
+<td>接口间状态不同步</td>
+</tr>
+</tbody></table>
+<p>4.3.例子：</p>
+<p> 示例 1：优惠券滥用</p>
+<p><strong>背景：</strong></p>
+<ul>
+<li><code>/apply-coupon</code> 用于将优惠券应用到当前 session；</li>
+<li><code>/checkout</code> 提交订单，读取 session 中的优惠信息；</li>
+<li>后端没有在下单时验证优惠券的有效性，只看 session。</li>
+</ul>
+<p><strong>攻击过程：</strong></p>
+<ol>
+<li>用户将一张一次性优惠券加入购物车（调用 <code>/apply-coupon</code>）；</li>
+<li>攻击者在<strong>多个 session 中同时发起 <code>/checkout</code> 请求</strong>，每次都复用那张优惠券；</li>
+<li>后端只检查 session，有可能允许多个 session 使用同一张优惠券。</li>
+</ol>
+<p><strong>结果：一次性优惠券被多人使用</strong>。</p>
+<p>示例 2：权限提升</p>
+<p><strong>背景：</strong></p>
+<ul>
+<li><code>/start-verification</code> 接口发起邮箱验证流程（标记为“未验证”）；</li>
+<li><code>/update-role</code> 接口允许权限升级，但要求邮箱已验证；</li>
+<li>用户 ID 和状态信息存在 race window。</li>
+</ul>
+<p><strong>攻击过程：</strong></p>
+<ol>
+<li>发起邮箱验证请求；</li>
+<li>在邮箱验证状态更新前，同时发起 <code>/update-role</code>；</li>
+<li>系统仍认为邮箱已验证，成功将用户权限提升。</li>
+</ol>
+<p> 示例 3：重置密码逻辑不一致</p>
+<ul>
+<li><code>/forgot-password</code> 生成 token 写入数据库；</li>
+<li><code>/reset-password?token=...</code> 接受重置请求；</li>
+<li><code>/change-email</code> 能覆盖该 token 或修改绑定状态。</li>
+</ul>
+<p>攻击者在 <code>/reset-password</code> 和其他端点之间制造竞争窗口，导致错误的邮箱收到密码重置。</p>
+<p>4.4.在测试多端点竞争条件时，你可能会遇到尝试为每个请求排列竞争窗口的问题，即使你使用单包技术同时发送所有请求。</p>
+<p><img src="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/4.png" srcset="/img/loading.gif" lazyload></p>
+<p>这一常见问题主要由以下两个因素造成：</p>
+<ul>
+<li>**网络架构导致的延迟 -**例如，前端服务器与后端建立新连接时可能会出现延迟。所使用的协议也会产生重大影响。</li>
+<li>**端点特定处理引入的延迟 -**不同端点的处理时间本质上存在差异，有时差异很大，这取决于它们触发的操作。</li>
+</ul>
+<p>幸运的是，这两个问题都有潜在的解决方法。</p>
+<h4 id="连接警告"><a href="#连接警告" class="headerlink" title="连接警告"></a>连接警告</h4><p>后端连接延迟通常不会干扰竞争条件攻击，因为它们通常会平等地延迟并行请求，因此请求保持同步。</p>
+<p>区分这些延迟与特定于端点的因素造成的延迟至关重要。一种方法是使用一个或多个无关紧要的请求来**“预热”**连接，看看这是否能平滑剩余的处理时间。在 Burp Repeater 中，你可以尝试将<code>GET</code>主页的请求添加到选项卡组的开头，然后使用“**按顺序发送组（单个连接）”**选项。</p>
+<p>如果第一个请求仍然需要较长的处理时间，但其余请求现在可以在短时间内处理，那么你可以忽略明显的延迟并继续正常测试。</p>
+<h4 id="滥用速率或资源限制"><a href="#滥用速率或资源限制" class="headerlink" title="滥用速率或资源限制"></a>滥用速率或资源限制</h4><p>在某些环境中，比如后端响应时间不稳定、负载均衡、缓存波动等，<strong>并发请求的时间差异会变大</strong>，导致竞态攻击失效。</p>
+<p>例如，你发送两个请求希望它们“同时”修改某个状态，但其中一个请求晚到了几十毫秒，就错过了竞态窗口。</p>
+<p>方法一：客户端延迟（不推荐）</p>
+<p>你可以通过脚本引入 <code>sleep()</code> 等方式，让请求之间有意延迟以避开不稳定时间段，但这样做的问题是：</p>
+<ul>
+<li><strong>会导致一个请求拆成多个 TCP 包</strong>；</li>
+<li>破坏了所谓“单包攻击”的精确性（即在一个包中发送全部数据）；</li>
+<li>对于某些服务端，<strong>多包请求会被识别、拒绝或者导致行为不同</strong>；</li>
+<li>所以不适用于必须精确对齐的竞争条件。</li>
+</ul>
+<p>方法二：滥用服务器端“速率限制”机制制造延迟</p>
+<p>原理：</p>
+<p>许多服务器都有“速率限制”或“资源控制”功能，例如：</p>
+<ul>
+<li>每秒只处理 N 个请求；</li>
+<li>超出速率后排队处理或返回 429 错误；</li>
+<li>单 IP 或单会话限制带宽、连接数。</li>
+</ul>
+<p>利用方式：</p>
+<ol>
+<li>在攻击请求发出前，<strong>先发送大量虚假请求（虚耗资源）</strong>；</li>
+<li>这些请求会<strong>逼迫服务器进入处理瓶颈或延迟处理状态</strong>；</li>
+<li>接下来的攻击请求将更容易在<strong>几乎相同的时机被处理</strong>；</li>
+<li><strong>有利于创造“同时命中”条件，从而制造竞态成功的窗口</strong>。</li>
+</ol>
+<h3>单终点竞争条件</h3>
+
+<p>向同一个端点发送具有不同值的并行请求有时会引发严重的竞争条件。</p>
+<p>考虑一种密码重置机制，该机制将用户 ID 和重置令牌存储在用户的会话中。</p>
+<p>在这种情况下，从同一会话发送两个并行的密码重置请求，但使用两个不同的用户名，可能会导致以下冲突：</p>
+<p><img src="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/5.png" srcset="/img/loading.gif" lazyload></p>
+<p>注意所有操作完成后的最终状态：</p>
+<ul>
+<li><code>session[&#39;reset-user&#39;] = victim</code></li>
+<li><code>session[&#39;reset-token&#39;] = 1234</code></li>
+</ul>
+<p>会话中现在包含受害者的用户 ID，但有效的重置令牌已发送给攻击者。</p>
+<p>电子邮件地址确认或任何基于电子邮件的操作通常都容易出现单端点竞态条件。电子邮件通常在服务器向客户端发出 HTTP 响应后，在后台线程中发送，这使得竞态条件更容易出现。</p>
+<h3>绕过php锁机制</h3>
+
+<p>PHP 默认把 Session 数据存在服务器文件系统里，比如 <code>/tmp/sess_&lt;PHPSESSID&gt;</code>。</p>
+<p>当你调用 <code>session_start()</code> 时，PHP 会对这个文件执行 <strong><code>flock()</code> 排他锁</strong>。这个锁会一直保持，直到脚本结束，或者你显式调用 <code>session_write_close()</code>。</p>
+<p>我们可以尝试下面的方式绕过PHP的锁机制：</p>
+<ul>
+<li><strong>使用不同的 <code>PHPSESSID</code></strong>：为每个攻击请求分配一个全新的 Cookie。对于不要求登录的端点（如注册、密码重置），直接不带 Cookie，PHP 就会为每个请求自动创建新 Session，锁就失效了。</li>
+<li><strong>利用 <code>session_write_close()</code> 的漏洞</strong>：有些应用为了性能，会提前调用 <code>session_write_close()</code> 释放锁，然后继续执行耗时操作（如发邮件）。这个锁外的逻辑就完全暴露在并发攻击之下了。</li>
+</ul>
+<h2>如何防止竞争条件漏洞</h2>
+
+<p>当单个请求即可使应用程序经历多个不可见的子状态时，理解和预测其行为将极其困难，这使得防御措施难以实施。为了有效保护应用程序，可以通过应用以下策略消除所有敏感端点的子状态：</p>
+<ul>
+<li>避免混用来自不同存储位置的数据。</li>
+<li>确保敏感端点的状态变更具有原子性，方法是利用数据存储的并发特性。例如，使用单个数据库事务来检查付款是否与购物车金额匹配并确认订单。</li>
+<li>作为纵深防御措施，应充分利用数据存储的完整性和一致性功能，例如列唯一性约束。</li>
+<li>不要试图使用一种数据存储层来保护另一种数据存储层。例如，会话机制并不适合用来防止数据库遭受限制溢出攻击。</li>
+<li>确保会话处理框架能够保持会话内部的一致性。单独更新会话变量而不是批量更新或许是一种诱人的优化方式，但这极其危险。ORM 也同样如此；它们通过隐藏事务等概念，实际上承担了所有相关的责任。</li>
+<li>在某些架构中，完全避免服务器端状态可能更为合适。例如，可以使用加密技术将状态推送到客户端，例如使用 JWT。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web/" class="category-chain-item">web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/" class="print-no-link">#竞争条件</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>从小白开始竞争条件</div>
+      <div>http://blog.yunli1.com/2026/05/23/从小白开始竞争条件/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yunli</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年5月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/" title="初识sql注入">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">初识sql注入</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" title="OWTOP10芝文件包含">
+                        <span class="hidden-mobile">OWTOP10芝文件包含</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo ⭐</span></a> <a href="https://blog.yunli1.com/" target="_blank" rel="nofollow noopener"><span>yunli</span></a> <br> <span>主题</span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>fluid</span></a> <br> <span id="busuanzi_container_site_pv">总访问量：<span id="busuanzi_value_site_pv"></span> 次</span> <br> <span id="busuanzi_container_site_uv">访客数：<span id="busuanzi_value_site_uv"></span> 人</span> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

