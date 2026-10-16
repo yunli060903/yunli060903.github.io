@@ -22,20 +22,20 @@
     <meta name="description" content="java反序列化入门篇-02-反射前言在基础篇-01中我们将大致的反序列化架构和涉及的知识都介绍了一下，但想要到后面的CC链的学习，光有点皮毛还是不够的，后面几篇我们就逐步给大家丰富一下，这篇先从比较好理解的反射入手，由于前文有一定的介绍，所以后面可能不会反复提及基础的方法调用，反射方法等等，忘记的师傅们可以再翻一下第一篇 Java 命令执行的三种方式说是三种方式，但我认为只是同一条利用链的分段罢">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java反序列化入门篇-02-反射">
-<meta property="og:url" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E7%AF%87-02-%E5%8F%8D%E5%B0%84/index.html">
+<meta property="og:url" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/index.html">
 <meta property="og:site_name" content="noob weber">
 <meta property="og:description" content="java反序列化入门篇-02-反射前言在基础篇-01中我们将大致的反序列化架构和涉及的知识都介绍了一下，但想要到后面的CC链的学习，光有点皮毛还是不够的，后面几篇我们就逐步给大家丰富一下，这篇先从比较好理解的反射入手，由于前文有一定的介绍，所以后面可能不会反复提及基础的方法调用，反射方法等等，忘记的师傅们可以再翻一下第一篇 Java 命令执行的三种方式说是三种方式，但我认为只是同一条利用链的分段罢">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://blog.yunli1.com/1.png">
-<meta property="og:image" content="http://blog.yunli1.com/2.png">
-<meta property="og:image" content="http://blog.yunli1.com/3.png">
-<meta property="og:image" content="http://blog.yunli1.com/4.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/1.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/2.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/3.png">
+<meta property="og:image" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/4.png">
 <meta property="article:published_time" content="2026-09-19T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-16T07:50:04.035Z">
 <meta property="article:author" content="yunli">
 <meta property="article:tag" content="java反序列化">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://blog.yunli1.com/1.png">
+<meta name="twitter:image" content="http://blog.yunli1.com/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/1.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -391,11 +391,11 @@
                 <h1 id="java反序列化入门篇-02-反射"><a href="#java反序列化入门篇-02-反射" class="headerlink" title="java反序列化入门篇-02-反射"></a>java反序列化入门篇-02-反射</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在基础篇-01中我们将大致的反序列化架构和涉及的知识都介绍了一下，但想要到后面的CC链的学习，光有点皮毛还是不够的，后面几篇我们就逐步给大家丰富一下，这篇先从比较好理解的反射入手，由于前文有一定的介绍，所以后面可能不会反复提及基础的方法调用，反射方法等等，忘记的师傅们可以再翻一下第一篇</p>
 <h2 id="Java-命令执行的三种方式"><a href="#Java-命令执行的三种方式" class="headerlink" title="Java 命令执行的三种方式"></a>Java 命令执行的三种方式</h2><p>说是三种方式，但我认为只是同一条利用链的分段罢了，至于为什么这么说，通过源码来给大家捋一下</p>
 <p>我们平日最常利用<code>Runtime</code>类的<code>exec</code>方法来进行命令执行，我们去到这个方法的具体实现里面看看</p>
-<p><img src="/1.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/1.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里返回的是<code>ProcessBuilder</code>对象调用<code>start</code>方法的返回值，这个<code>ProcessBuilder</code>其实就是我们后面要讲的第二个方法所要利用的类，我们先去<code>start</code>方法里看看</p>
-<p><img src="/2.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/2.png" srcset="/img/loading.gif" lazyload></p>
 <p>奖池还在叠加，又冒出来一个新的类<code>ProcessImpl</code>，而它也是我们第三个方法所要讲到的类</p>
-<p><img src="/3.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/3.png" srcset="/img/loading.gif" lazyload></p>
 <p>而所有的命令进程创建与命令执行都是在<code>ProcessImpl</code>的构造函数中实现的，代码篇幅较长就不贴出来了，感兴趣的师傅可以自行查看。这就是我为什么说三种方法其实都是一条利用链的片段，三种方式追根究底都是<code>ProcessImpl</code>。用一句话来描述三者的关系就是：Runtime 是高层门面；ProcessBuilder 是参数配置器；ProcessImpl 是底层真正干活的实现类。</p>
 <h3 id="调用-Runtime-类进行命令执行"><a href="#调用-Runtime-类进行命令执行" class="headerlink" title="调用 Runtime 类进行命令执行"></a>调用 Runtime 类进行命令执行</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><br><span class="hljs-keyword">import</span> sun.awt.windows.WPrinterJob;<br><br><span class="hljs-keyword">import</span> java.io.ByteArrayOutputStream;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.io.InputStream;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">execRuntime</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String args[])</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        <span class="hljs-type">Runtime</span> <span class="hljs-variable">runtime</span> <span class="hljs-operator">=</span> Runtime.getRuntime();<br>        <span class="hljs-type">Process</span> <span class="hljs-variable">process</span> <span class="hljs-operator">=</span>runtime.exec(<span class="hljs-string">&quot;whoami&quot;</span>);<br>        <span class="hljs-type">InputStream</span> <span class="hljs-variable">inputStream</span> <span class="hljs-operator">=</span> process.getInputStream();<br>        <span class="hljs-type">byte</span>[] bytes = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[<span class="hljs-number">100</span>];<br>        <span class="hljs-type">ByteArrayOutputStream</span> <span class="hljs-variable">byteArrayOutputStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ByteArrayOutputStream</span>();<br>        <span class="hljs-type">int</span> <span class="hljs-variable">readlen</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">while</span>((readlen = inputStream.read(bytes))!=-<span class="hljs-number">1</span>)&#123;<br>            byteArrayOutputStream.write(bytes,<span class="hljs-number">0</span>,readlen);<br>        &#125;<br>        System.out.println(byteArrayOutputStream);<br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
@@ -499,7 +499,7 @@
 
 
 
-<p><img src="/4.png" srcset="/img/loading.gif" lazyload></p>
+<p><img src="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/4.png" srcset="/img/loading.gif" lazyload></p>
 <p>不过无需灰心，虽然<code>static final</code>的组合技确实阻碍了我们的利用，但我们把这个障碍移开不就好了，移开的方法就是去掉final修饰符</p>
 <p><strong>varreflect.java</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> org.example;<br><br><span class="hljs-keyword">import</span> java.io.*;<br><span class="hljs-keyword">import</span> java.lang.reflect.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">varreflect</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception &#123;<br>        <span class="hljs-type">Class</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> Class.forName(<span class="hljs-string">&quot;org.example.StaticFinalPerson&quot;</span>);<br>        <span class="hljs-type">Constructor</span> <span class="hljs-variable">constructor</span> <span class="hljs-operator">=</span> c.getConstructor();<br>        <span class="hljs-type">Object</span> <span class="hljs-variable">o</span> <span class="hljs-operator">=</span> constructor.newInstance();<br>        <span class="hljs-type">Method</span> <span class="hljs-variable">method</span> <span class="hljs-operator">=</span> c.getDeclaredMethod(<span class="hljs-string">&quot;printInfo&quot;</span>);<br>        method.invoke(o);<br>        <span class="hljs-type">Field</span> <span class="hljs-variable">field</span> <span class="hljs-operator">=</span> c.getDeclaredField(<span class="hljs-string">&quot;name&quot;</span>);<br>        field.setAccessible(<span class="hljs-literal">true</span>);<br>        <span class="hljs-type">Field</span> <span class="hljs-variable">field1</span> <span class="hljs-operator">=</span> field.getClass().getDeclaredField(<span class="hljs-string">&quot;modifiers&quot;</span>);<br>        field1.setAccessible(<span class="hljs-literal">true</span>);<br>        field1.setInt(field,field.getModifiers() &amp; ~Modifier.FINAL);<br>        field.set(o,<span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>(<span class="hljs-string">&quot;yunli need hardworking&quot;</span>));<br>        method.invoke(o);<br>    &#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
@@ -569,7 +569,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>java反序列化入门篇-02-反射</div>
-      <div>http://blog.yunli1.com/2026/09/20/java反序列化基础篇-02-反射/</div>
+      <div>http://blog.yunli1.com/2026/09/20/java反序列化入门篇-02-反射/</div>
     </div>
     <div class="license-meta">
       
@@ -613,7 +613,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/09/25/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%9F%BA%E7%A1%80%E7%AF%87-03-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" title="java反序列化入门篇-03-动态代理">
+                      <a href="/2026/09/25/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-03-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" title="java反序列化入门篇-03-动态代理">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">java反序列化入门篇-03-动态代理</span>
                         <span class="visible-mobile">上一篇</span>
