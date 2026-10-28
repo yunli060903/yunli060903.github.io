@@ -337,15 +337,15 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h2 class="index-header">
         
-        <a href="/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/" target="_self">
-          WOTOP10芝CSRF篇
+        <a href="/2026/10/28/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96Commons-Collections%E7%AF%8701%E2%80%94%E2%80%94CC1%E9%93%BE/" target="_self">
+          Java反序列化Commons-Collections篇01——CC1链
         </a>
       </h2>
 
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2025/11/21/WOTOP10%E8%8A%9DCSRF%E7%AF%87/" target="_self">
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/10/28/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96Commons-Collections%E7%AF%8701%E2%80%94%E2%80%94CC1%E9%93%BE/" target="_self">
         <div>
-          什么是CRSF  用官方的话来说：CSRF（Cross-site request forgery）跨站请求伪造：攻击者诱导受害者进入第三方网站，在第三方网站中，向被攻击网站发送跨站请求。利用受害者在被攻击网站已经获取的注册凭证，绕过后台的用户验证，达到冒充用户对被攻击的网站执行某项操作的目的。 用人话来说：CSRF就是利用恶意小网站来借用注册凭证伪装是你来访问目标网站并执行操作。看到这个说法是不是
+          Java反序列化Commons-Collections篇01——CC1链（TransformMap版）0x01 前言本篇开始，逐步学习java反序列化的利用链，建议各位师傅在浏览本文的时候自己也去调试debug一下，这样才能真正理解，光看很难真正理解原理，且容易自己混乱（亲身经历（苦笑））。尤其是find usages的部分一定要自己去查找，这对于之后的学习和以后大家自己尝试其他利用链具有很大的学
         </div>
       </a>
 
@@ -353,8 +353,374 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2025-11-21 00:00" pubdate>
-              2025-11-21
+            <time datetime="2026-10-28 20:07" pubdate>
+              2026-10-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-04-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" target="_self">
+          java反序列化入门篇-04-类加载机制
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/09/28/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-04-%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" target="_self">
+        <div>
+          java反序列化入门篇-04-类加载机制前言本篇介绍的是类加载机制，既然是类加载机制，那我们需要研究的就比较底层了，需要根据源码打断点才能看清整个调用逻辑，单纯的文字知识了解，无法真正看到调用逻辑始终无法真正将这个概念植入心里，所以希望学习这块的师傅们可以自己打断点理解一下，当然我们不是只是简单的过一遍，而是真正理解他到底为什么会进到这一块代码。 类加载器什么是类加载器.java文件在编译后会生成
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-09-28 00:00" pubdate>
+              2026-09-28
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/09/25/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-03-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" target="_self">
+          java反序列化入门篇-03-动态代理
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/09/25/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-03-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" target="_self">
+        <div>
+          java反序列化入门篇-03-动态代理在这一篇中想记录一下学习代理的原理和作用，但在基础篇-01中已经用代码有一个大致的了解了，后面尽可能减少重复 java的代理模式先简单来说一下什么是代理吧，代理的本质是不修改目标类原有代码的前提下，在目标方法执行前后增加额外逻辑（增强）。 有一个代理对象，持有目标对象引用；外部调用者只和代理对象打交道，由代理对象转发请求给真实目标。而在java的代理模式中存在
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-09-25 00:00" pubdate>
+              2026-09-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/" target="_self">
+          java反序列化入门篇-02-反射
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/09/20/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-02-%E5%8F%8D%E5%B0%84/" target="_self">
+        <div>
+          java反序列化入门篇-02-反射前言在基础篇-01中我们将大致的反序列化架构和涉及的知识都介绍了一下，但想要到后面的CC链的学习，光有点皮毛还是不够的，后面几篇我们就逐步给大家丰富一下，这篇先从比较好理解的反射入手，由于前文有一定的介绍，所以后面可能不会反复提及基础的方法调用，反射方法等等，忘记的师傅们可以再翻一下第一篇 Java 命令执行的三种方式说是三种方式，但我认为只是同一条利用链的分段罢
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-09-20 00:00" pubdate>
+              2026-09-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/" target="_self">
+          java反序列化入门篇-01-概念初相识
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/" target="_self">
+        <div>
+          java反序列化入门篇-01-概念初相识也是学到java了，java确实方便，各种封装好的函数随便用，整一个就是调用调用再调用，但可以利用的地方也很多，果然便利是安全最大的敌人。 什么是反序列化一步一步学过来的师傅们肯定对反序列化的定义和原理都不太陌生了，但想必以前都是接触的PHP反序列化。那java反序列化存在的意义又是什么呢？我们知道，当两个进程进行远程通信时，可以相互发送各种类型的数据，包括
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-07-14 00:00" pubdate>
+              2026-07-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93/" target="_self">
+          java反序列化入门篇-01-概念初相识
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93/" target="_self">
+        <div>
+          Java反序列化也是学到java了，java确实方便，各种封装好的函数随便用，整一个就是调用调用再调用，但可以利用的地方也很多，果然便利是安全最大的敌人。 什么是反序列化一步一步学过来的师傅们肯定对反序列化的定义和原理都不太陌生了，但想必以前都是接触的PHP反序列化。那java反序列化存在的意义又是什么呢？我们知道，当两个进程进行远程通信时，可以相互发送各种类型的数据，包括文本、图片、音频、视频等
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-07-14 00:00" pubdate>
+              2026-07-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">#java反序列化</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/" target="_self">
+          初识sql注入
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/" target="_self">
+        <div>
+          初始SQL注入什么是SQL在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名a[1]
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-05-24 11:26" pubdate>
+              2026-05-24
             </time>
           </div>
         
@@ -384,7 +750,190 @@
           <div class="post-meta">
             <i class="iconfont icon-tags"></i>
             
-              <a href="/tags/csrf/">#csrf</a>
+              <a href="/tags/sql/">#sql</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/" target="_self">
+          从小白开始竞争条件
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/05/23/%E4%BB%8E%E5%B0%8F%E7%99%BD%E5%BC%80%E5%A7%8B%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/" target="_self">
+        <div>
+          什么是竞争条件   在处理并发请求时（例如上传文件与将文件存入数据库；支付订单与付款过程），当他们这些行为并未严格进行原子性保护，每个请求之间会存在极短的时间间隔，可通过这个极短的时间间隔实现一些恶意行为（在支付与付款期间将更多订单加入，但支付金额不变；在使用优惠卷时与优惠券核验的状态转变过程加入多步相同的优惠卷使用行为，优惠卷状态来不及更新就已经使用，使得优惠卷多次使用）。而在这个极短时间内行为
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-05-23 20:55" pubdate>
+              2026-05-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web/" class="category-chain-item">web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E7%AB%9E%E4%BA%89%E6%9D%A1%E4%BB%B6/">#竞争条件</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" target="_self">
+          OWTOP10芝文件包含
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/04/23/OWTOP10%E8%8A%9D%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/" target="_self">
+        <div>
+          一.什么是文件包含漏洞  PHP文件包含漏洞在对服务端所利用requie()，include()，requie_once()，include_once()的不安全包含文件，在这个四个函数中，无论文件为任意类型，只要内容为php代码，就会在包含的时候自动读取代码内容并执行。 require_once() 和 include_once() 功能与require() 和 include() 类似。但如果
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-04-23 21:01" pubdate>
+              2026-04-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/web/" class="category-chain-item">web</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/">#文件包含</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/02/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BB%8E0%E5%88%B01%E5%AD%A6%E4%B9%A0PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" target="_self">
+          一篇文章从0到1学习PHP反序列化
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/02/14/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E4%BB%8E0%E5%88%B01%E5%AD%A6%E4%B9%A0PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" target="_self">
+        <div>
+          PHP反序列化  什么是序列化  序列化（Serialization）是将对象的状态信息（属性）转换为可以存储或传输的形式的过程。 他的目的就是存储对象信息，所以对象—&gt;字符串，将对象或者数组转换为可存储&#x2F;运输的字符串 介绍一点格式： 1234567891011空字符： null—&gt;N;整型： 666 —&gt;i:666;浮点型： 66.6—&gt;d:66.6;Boole
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-02-14 00:00" pubdate>
+              2026-02-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/php/" class="category-chain-item">php</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/php/">#php</a>
             
           </div>
         
@@ -396,7 +945,7 @@
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

